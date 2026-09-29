@@ -1,0 +1,25 @@
+# .gitignore
+
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# Frontend (Node / Vite)
+frontend/node_modules/
+frontend/dist/
+
+# Terraform
+infra/.terraform/
+*.tfstate
+*.tfstate.backup
+
+# IDE (PyCharm / IntelliJ)
+.idea/
+
+# Variáveis de Ambiente
+.env
+*.env
