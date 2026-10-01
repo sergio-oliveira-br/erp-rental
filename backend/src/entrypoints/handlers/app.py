@@ -10,6 +10,7 @@ from src.domain.exceptions.domain_exceptions import (
     BusinessRuleException,
     DomainException,
 )
+from src.entrypoints.routers import clients, materials, rentals
 
 logger = Logger(service="erp-rental-api")
 
@@ -43,6 +44,12 @@ async def generic_domain_handler(request: Request, exc: DomainException):
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"error": "UNPROCESSABLE_ENTITY", "message": exc.message}
     )
+
+
+# Registro dos Roteadores
+app.include_router(clients.router)
+app.include_router(materials.router)
+app.include_router(rentals.router)
 
 # --- ENDPOINTS ---
 @app.get("/health", tags=["Health"])
