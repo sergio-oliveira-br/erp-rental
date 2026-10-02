@@ -5,6 +5,7 @@ fastapi>=0.110.0
 mangum>=0.17.0
 aws-lambda-powertools[all]>=2.34.0
 uvicorn[standard]>=0.28.0
+pydantic-settings>=2.7.0
 
 # Validação & ORM
 pydantic>=2.6.0
