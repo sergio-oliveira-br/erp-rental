@@ -14,7 +14,6 @@ class ClientCreateSchema(BaseModel):
     name: str = Field(..., min_length=2, max_length=100, example="João Silva")
     phone: str = Field(..., min_length=8, max_length=20, example="11999998888")
     address: str = Field(..., min_length=5, max_length=255, example="Rua A, 123 - São Paulo/SP")
-    email: Optional[str] = Field(None, example="joao.silva@email.com")
 
 
 class ClientResponseSchema(BaseModel):
@@ -24,7 +23,6 @@ class ClientResponseSchema(BaseModel):
     name: str
     phone: str
     address: str
-    email: Optional[str]
     is_active: bool
     created_at: datetime
 
