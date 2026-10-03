@@ -6,10 +6,7 @@ import pytest
 
 from src.domain.entities.client import Client
 from src.domain.entities.material import Material
-from src.domain.exceptions.domain_exceptions import (
-    EntityNotFoundException,
-    MaterialUnavailableException,
-)
+from src.domain.exceptions.domain_exceptions import (MaterialUnavailableException,)
 from src.domain.use_cases.create_rental import CreateRentalUseCase
 from src.infrastructure.adapters.in_memory_client_repository import InMemoryClientRepository
 from src.infrastructure.adapters.in_memory_material_repository import InMemoryMaterialRepository
