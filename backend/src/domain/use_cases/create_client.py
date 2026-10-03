@@ -9,5 +9,5 @@ class CreateClientUseCase:
         self.client_repo = client_repo
 
     def execute(self, name: str, phone: str, address: str, email: Optional[str] = None) -> Client:
-        client = Client(name=name, phone=phone, address=address, email=email)
+        client = Client(name=name, phone=phone, address=address)
         return self.client_repo.save(client)
