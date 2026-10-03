@@ -8,6 +8,6 @@ class CreateClientUseCase:
     def __init__(self, client_repo: ClientRepositoryPort):
         self.client_repo = client_repo
 
-    def execute(self, name: str, phone: str, address: str, email: Optional[str] = None) -> Client:
+    def execute(self, name: str, phone: str, address: str) -> Client:
         client = Client(name=name, phone=phone, address=address)
         return self.client_repo.save(client)
