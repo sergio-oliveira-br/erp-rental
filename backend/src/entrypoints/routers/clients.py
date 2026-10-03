@@ -16,5 +16,4 @@ def create_client(
         name=payload.name,
         phone=payload.phone,
         address=payload.address,
-        email=payload.email
     )
