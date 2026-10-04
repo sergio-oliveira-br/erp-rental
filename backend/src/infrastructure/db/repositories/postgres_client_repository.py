@@ -28,7 +28,7 @@ class PostgresClientRepository(ClientRepositoryPort):
             id=entity.id,
             name=entity.name,
             phone=entity.phone,
-            addres=entity.address,
+            address=entity.address,
             is_active=entity.is_active,
             created_at=entity.created_at,
         )
