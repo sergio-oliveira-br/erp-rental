@@ -6,6 +6,7 @@ from sqlmodel import Session
 from src.domain.use_cases.create_client import CreateClientUseCase
 from src.domain.use_cases.create_material import CreateMaterialUseCase
 from src.domain.use_cases.create_rental import CreateRentalUseCase
+from src.domain.use_cases.list_clients import ListClientsUseCase
 from src.infrastructure.db.repositories.postgres_client_repository import PostgresClientRepository
 from src.infrastructure.db.session import get_session
 from src.infrastructure.db.repositories.postgres_material_repository import PostgresMaterialRepository
@@ -21,6 +22,11 @@ def get_rental_repository(session: Session = Depends(get_session)) -> PostgresRe
 
 def get_client_repository(session: Session = Depends(get_session)) -> PostgresClientRepository:
     return PostgresClientRepository(session=session)
+
+def get_list_clients_use_case(
+    client_repo: PostgresClientRepository = Depends(get_client_repository),
+) -> ListClientsUseCase:
+    return ListClientsUseCase(client_repo=client_repo)
 
 
 def get_create_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> CreateClientUseCase:
