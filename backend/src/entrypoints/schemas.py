@@ -2,18 +2,27 @@
 
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Generic, TypeVar, List
 import uuid
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.domain.entities.rental import PaymentStatus, RentalStatus
 
 
+T = TypeVar("T")
+
 # --- CLIENT SCHEMAS ---
 class ClientCreateSchema(BaseModel):
     name: str = Field(..., min_length=2, max_length=100, example="João Silva")
     phone: str = Field(..., min_length=8, max_length=20, example="11999998888")
     address: str = Field(..., min_length=5, max_length=255, example="Rua A, 123 - São Paulo/SP")
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: List[T]
+    total: int
+    page: int
+    limit: int
 
 
 class ClientResponseSchema(BaseModel):
