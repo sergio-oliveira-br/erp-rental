@@ -1,0 +1,72 @@
+// frontend/src/features/clients/hooks/useClients.ts
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import type { ClientCreatePayload, ClientUpdatePayload } from '@/types';
+import { clientService } from '../services/clientService';
+import type { GetClientsParams } from '../services/clientService';
+
+// Query Keys Factory para gerenciamento seguro de cache
+export const clientKeys = {
+  all: ['clients'] as const,
+  lists: () => [...clientKeys.all, 'list'] as const,
+  list: (params?: GetClientsParams) => [...clientKeys.lists(), params] as const,
+  details: () => [...clientKeys.all, 'detail'] as const,
+  detail: (id: string) => [...clientKeys.details(), id] as const,
+};
+
+// Hook para buscar a lista de clientes
+export function useClients(params?: GetClientsParams) {
+  return useQuery({
+    queryKey: clientKeys.list(params),
+    queryFn: () => clientService.getClients(params),
+    placeholderData: (previousData) => previousData, // Mantém dados anteriores durante a paginação
+  });
+}
+
+// Hook para buscar um único cliente por ID
+export function useClient(id: string) {
+  return useQuery({
+    queryKey: clientKeys.detail(id),
+    queryFn: () => clientService.getClientById(id),
+    enabled: Boolean(id),
+  });
+}
+
+// Hook para criação de cliente
+export function useCreateClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: ClientCreatePayload) => clientService.createClient(payload),
+    onSuccess: () => {
+      // Invalida a lista para forçar o refetch e atualizar a tabela
+      queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
+    },
+  });
+}
+
+// Hook para atualização de cliente
+export function useUpdateClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ClientUpdatePayload }) =>
+      clientService.updateClient(id, payload),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: clientKeys.detail(variables.id) });
+    },
+  });
+}
+
+// Hook para deleção de cliente
+export function useDeleteClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => clientService.deleteClient(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
+    },
+  });
+}
