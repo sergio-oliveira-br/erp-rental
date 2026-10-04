@@ -12,20 +12,20 @@ export interface GetClientsParams {
 
 export const clientService = {
   // Listagem paginada e com filtro
-  getClients: async (params?: GetClientsParams): Promise<PaginatedResponse<Client>> => {
-    const response = await apiClient.get<PaginatedResponse<Client>>('/v1/clients', { params });
+  getClients: async (params?: GetClientsParams): Promise<PaginatedResponse<Client> | Client[]> => {
+    const response = await apiClient.get('/clients/', { params });
     return response.data;
   },
 
   // Busca cliente por ID
   getClientById: async (id: string): Promise<Client> => {
-    const response = await apiClient.get<Client>(`/v1/clients/${id}`);
+    const response = await apiClient.get<Client>(`/clients/${id}`);
     return response.data;
   },
 
   // Criação de cliente
   createClient: async (payload: ClientCreatePayload): Promise<Client> => {
-    const response = await apiClient.post<Client>('/v1/clients', payload);
+    const response = await apiClient.post<Client>('/clients/', payload);
     return response.data;
   },
 
