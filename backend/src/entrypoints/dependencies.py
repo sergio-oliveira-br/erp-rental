@@ -1,3 +1,5 @@
+# backend/src/entrypoints/dependencies.py
+
 from fastapi import Depends
 from sqlmodel import Session
 
