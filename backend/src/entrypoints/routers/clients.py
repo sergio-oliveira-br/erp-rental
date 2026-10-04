@@ -1,12 +1,45 @@
 # backend/src/entrypoints/routers/clients.py
 
-from fastapi import APIRouter, Depends, status
-from src.entrypoints.dependencies import get_create_client_use_case
-from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema
+from typing import List
+from fastapi import APIRouter, Depends, status, Query
+
+from src.entrypoints.dependencies import get_create_client_use_case, get_list_clients_use_case
+from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema, PaginatedResponse
 from src.domain.use_cases.create_client import CreateClientUseCase
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 
+# Rota de Listagem (GET)
+@router.get("/", response_model=PaginatedResponse[ClientResponseSchema])
+def list_clients(page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    search: str = Query("", description="Termo de busca por nome, telefone ou endereço"),
+    use_case=Depends(get_list_clients_use_case)
+ ):
+    # Executa o caso de uso (passe os parâmetros caso seu use_case/repositório já os trate)
+    clients = use_case.execute()
+
+    # Se a filtragem/paginação ainda não for feita na query do banco SQLModel,
+    # você pode fazer um fatiamento em memória temporário:
+    if search:
+        search_lower = search.lower()
+        clients = [
+            c for c in clients
+            if search_lower in c.name.lower() or search_lower in (c.address or "").lower()
+        ]
+
+    total = len(clients)
+    start_offset = (page - 1) * limit
+    paginated_items = clients[start_offset: start_offset + limit]
+
+    return {
+        "items": paginated_items,
+        "total": total,
+        "page": page,
+        "limit": limit,
+    }
+
+# Rota de Criação (POST)
 @router.post("/", response_model=ClientResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_client(
     payload: ClientCreateSchema,
