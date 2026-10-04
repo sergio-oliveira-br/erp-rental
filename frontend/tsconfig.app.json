@@ -8,6 +8,14 @@
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
 
+    // TypeScript reconhecer o @/)
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -26,3 +34,4 @@
     "src"
   ]
 }
+
