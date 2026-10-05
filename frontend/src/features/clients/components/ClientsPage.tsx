@@ -34,8 +34,18 @@ export function ClientsPage() {
     }
   };
 
-  const clients = data?.items || [];
-  const totalPages = data?.pages || 1;
+// Tratamento seguro para TypeScript
+const clients = Array.isArray(data)
+? data
+: data?.items || [];
+
+const totalItems = Array.isArray(data)
+  ? data.length
+  : data?.total || 0;
+
+const limit = 10;
+const totalPages = Math.ceil(totalItems / limit) || 1;
+
 
   return (
     <div className="space-y-6">
