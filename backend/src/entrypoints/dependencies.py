@@ -41,6 +41,9 @@ def get_update_client_use_case(client_repo: PostgresClientRepository = Depends(g
 def get_delete_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> DeleteClientUseCase:
     return DeleteClientUseCase(client_repo=client_repo)
 
+def get_activate_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> ActivateClientUseCase:
+    return ActivateClientUseCase(client_repo=client_repo)
+
 
 # -----------------
 # Rent
