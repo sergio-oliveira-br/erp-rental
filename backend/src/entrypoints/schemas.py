@@ -36,6 +36,12 @@ class ClientResponseSchema(BaseModel):
     created_at: datetime
 
 
+class ClientUpdateSchema(BaseModel):
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
+    phone: Optional[str] = Field(None, min_length=8, max_length=20)
+    address: Optional[str] = Field(None, min_length=5, max_length=255)
+
+
 # --- MATERIAL SCHEMAS ---
 class MaterialCreateSchema(BaseModel):
     name: str = Field(..., min_length=2, max_length=100, example="Betoneira 400L")
