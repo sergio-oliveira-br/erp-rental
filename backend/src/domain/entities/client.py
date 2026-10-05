@@ -17,3 +17,7 @@ class Client:
     def inactivate(self) -> None:
         """Aplica a regra de Soft Delete para proteção de integridade."""
         self.is_active = False
+
+    def activate(self) -> None:
+        """Reativa o cadastro do cliente para voltar a alugar materiais."""
+        self.is_active = True
