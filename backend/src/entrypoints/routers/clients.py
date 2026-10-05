@@ -4,9 +4,10 @@ from typing import List
 from fastapi import APIRouter, Depends, status, Query, HTTPException
 
 from src.domain.exceptions.domain_exceptions import EntityNotFoundException
+from src.domain.use_cases.activate_client import ActivateClientUseCase
 from src.domain.use_cases.delete_client import DeleteClientUseCase
 from src.entrypoints.dependencies import get_create_client_use_case, get_list_clients_use_case, \
-    get_update_client_use_case, get_delete_client_use_case
+    get_update_client_use_case, get_delete_client_use_case, get_activate_client_use_case
 from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema, PaginatedResponse, ClientUpdateSchema
 from src.domain.use_cases.create_client import CreateClientUseCase
 
@@ -17,13 +18,12 @@ router = APIRouter(prefix="/clients", tags=["Clients"])
 def list_clients(page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
     search: str = Query("", description="Termo de busca por nome, telefone ou endereço"),
+    is_active: bool = Query(True, description="Filtra por clientes ativos (True) ou inativados (False)"),
     use_case=Depends(get_list_clients_use_case)
  ):
-    # Executa o caso de uso (passe os parâmetros caso seu use_case/repositório já os trate)
-    clients = use_case.execute()
 
-    # Se a filtragem/paginação ainda não for feita na query do banco SQLModel,
-    # você pode fazer um fatiamento em memória temporário:
+    clients = use_case.execute(is_active=is_active)
+
     if search:
         search_lower = search.lower()
         clients = [
