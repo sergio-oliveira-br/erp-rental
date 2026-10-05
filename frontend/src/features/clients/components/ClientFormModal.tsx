@@ -12,9 +12,7 @@ import type { Client } from '@/types';
 
 const clientSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
-  email: z.string().email('E-mail inválido'),
   phone: z.string().min(10, 'Telefone deve ter ao menos 10 dígitos'),
-  document: z.string().min(11, 'CPF/CNPJ inválido (mínimo 11 caracteres)'),
   address: z.string().optional(),
 });
 
@@ -41,9 +39,7 @@ export function ClientFormModal({ isOpen, onClose, clientToEdit }: ClientFormMod
     resolver: zodResolver(clientSchema),
     defaultValues: {
       name: '',
-      email: '',
       phone: '',
-      document: '',
       address: '',
     },
   });
@@ -52,17 +48,13 @@ export function ClientFormModal({ isOpen, onClose, clientToEdit }: ClientFormMod
     if (clientToEdit) {
       reset({
         name: clientToEdit.name,
-        email: clientToEdit.email,
         phone: clientToEdit.phone,
-        document: clientToEdit.document,
         address: clientToEdit.address || '',
       });
     } else {
       reset({
         name: '',
-        email: '',
         phone: '',
-        document: '',
         address: '',
       });
     }
@@ -112,26 +104,12 @@ export function ClientFormModal({ isOpen, onClose, clientToEdit }: ClientFormMod
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
-            label="E-mail *"
-            type="email"
-            placeholder="cliente@email.com"
-            error={errors.email?.message}
-            {...register('email')}
-          />
-          <Input
             label="Telefone *"
             placeholder="(34) 99999-8888"
             error={errors.phone?.message}
             {...register('phone')}
           />
         </div>
-
-        <Input
-          label="CPF / CNPJ *"
-          placeholder="000.000.000-00"
-          error={errors.document?.message}
-          {...register('document')}
-        />
 
         <Input
           label="Endereço"
