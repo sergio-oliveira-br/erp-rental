@@ -62,9 +62,13 @@ export function useUpdateClient() {
     mutationFn: ({ id, payload }: { id: string; payload: ClientUpdatePayload }) =>
       clientService.updateClient(id, payload),
     onSuccess: (_, variables) => {
+      toast.success(`Cliente ${_.name} atualizado com sucesso!`)
       queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
       queryClient.invalidateQueries({ queryKey: clientKeys.detail(variables.id) });
     },
+    onError: () => {
+      toast.error(`Não foi possível atualizar o cadastro do cliente.`)
+    }
   });
 }
 
