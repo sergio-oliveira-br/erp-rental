@@ -6,6 +6,7 @@ from sqlmodel import Session
 from src.domain.use_cases.create_client import CreateClientUseCase
 from src.domain.use_cases.create_material import CreateMaterialUseCase
 from src.domain.use_cases.create_rental import CreateRentalUseCase
+from src.domain.use_cases.delete_client import DeleteClientUseCase
 from src.domain.use_cases.list_clients import ListClientsUseCase
 from src.domain.use_cases.update_client import UpdateClientUseCase
 from src.infrastructure.db.repositories.postgres_client_repository import PostgresClientRepository
@@ -38,6 +39,10 @@ def get_create_client_use_case(client_repo: PostgresClientRepository = Depends(g
 
 def get_update_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> UpdateClientUseCase:
     return UpdateClientUseCase(client_repo=client_repo)
+
+
+def get_delete_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> DeleteClientUseCase:
+    return DeleteClientUseCase(client_repo=client_repo)
 
 
 # -----------------
