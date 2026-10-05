@@ -12,8 +12,8 @@ export interface GetClientsParams {
 
 export const clientService = {
   // Listagem paginada e com filtro
-  getClients: async (params?: GetClientsParams): Promise<PaginatedResponse<Client> | Client[]> => {
-    const response = await apiClient.get('/clients/', { params });
+  getClients: async (params?: GetClientsParams): Promise<PaginatedResponse<Client>>  => {
+    const response = await apiClient.get<PaginatedResponse<Client>>('/clients/', { params });
     return response.data;
   },
 
