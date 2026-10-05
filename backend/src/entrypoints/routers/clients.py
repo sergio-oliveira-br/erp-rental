@@ -60,7 +60,6 @@ def update_client(
     payload: ClientUpdateSchema,
     use_case = Depends(get_update_client_use_case),
 ):
-    print('Metodo acessado, e estou enviando o client: ', client_id)
     updated_client = use_case.execute(
         client_id=client_id,
         name=payload.name,
