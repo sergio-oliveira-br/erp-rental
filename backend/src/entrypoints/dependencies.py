@@ -3,6 +3,7 @@
 from fastapi import Depends
 from sqlmodel import Session
 
+from src.domain.use_cases.activate_client import ActivateClientUseCase
 from src.domain.use_cases.create_client import CreateClientUseCase
 from src.domain.use_cases.create_material import CreateMaterialUseCase
 from src.domain.use_cases.create_rental import CreateRentalUseCase
@@ -28,18 +29,14 @@ def get_create_material_use_case(material_repo: PostgresMaterialRepository = Dep
 def get_client_repository(session: Session = Depends(get_session)) -> PostgresClientRepository:
     return PostgresClientRepository(session=session)
 
-
 def get_list_clients_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> ListClientsUseCase:
     return ListClientsUseCase(client_repo=client_repo)
-
 
 def get_create_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> CreateClientUseCase:
     return CreateClientUseCase(client_repo=client_repo)
 
-
 def get_update_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> UpdateClientUseCase:
     return UpdateClientUseCase(client_repo=client_repo)
-
 
 def get_delete_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> DeleteClientUseCase:
     return DeleteClientUseCase(client_repo=client_repo)
@@ -49,7 +46,6 @@ def get_delete_client_use_case(client_repo: PostgresClientRepository = Depends(g
 # Rent
 def get_rental_repository(session: Session = Depends(get_session)) -> PostgresRentalRepository:
     return PostgresRentalRepository(session=session)
-
 
 def get_create_rental_use_case(
     rental_repo: PostgresRentalRepository = Depends(get_rental_repository),
