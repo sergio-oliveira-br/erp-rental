@@ -37,6 +37,6 @@ export const clientService = {
 
   // Remoção (soft delete ou exclusão)
   deleteClient: async (id: string): Promise<void> => {
-    await apiClient.delete(`/v1/clients/${id}`);
+    await apiClient.delete(`/clients/${id}`);
   },
 };
