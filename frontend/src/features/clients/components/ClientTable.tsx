@@ -37,7 +37,6 @@ export function ClientTable({ clients, isLoading, onEdit, onDelete }: ClientTabl
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <th className="px-6 py-3">Cliente</th>
-              <th className="px-6 py-3">CPF / CNPJ</th>
               <th className="px-6 py-3">Contato</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3 text-right">Ações</th>
@@ -50,10 +49,8 @@ export function ClientTable({ clients, isLoading, onEdit, onDelete }: ClientTabl
                   <div className="font-medium text-gray-900">{client.name}</div>
                   <div className="text-xs text-gray-500 truncate max-w-xs">{client.address || 'Sem endereço cadastrado'}</div>
                 </td>
-                <td className="px-6 py-4 font-mono text-xs text-gray-700">{client.document}</td>
                 <td className="px-6 py-4">
                   <div className="text-gray-900">{client.phone}</div>
-                  <div className="text-xs text-gray-500">{client.email}</div>
                 </td>
                 <td className="px-6 py-4">
                   {client.is_active ? (
