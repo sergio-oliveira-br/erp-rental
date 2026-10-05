@@ -13,34 +13,37 @@ from src.infrastructure.db.session import get_session
 from src.infrastructure.db.repositories.postgres_material_repository import PostgresMaterialRepository
 from src.infrastructure.db.repositories.postgres_rental_repository import PostgresRentalRepository
 
-
+# -----------------
+# Material
 def get_material_repository(session: Session = Depends(get_session)) -> PostgresMaterialRepository:
     return PostgresMaterialRepository(session=session)
 
+def get_create_material_use_case(material_repo: PostgresMaterialRepository = Depends(get_material_repository),) -> CreateMaterialUseCase:
+    return CreateMaterialUseCase(material_repo=material_repo)
 
-def get_rental_repository(session: Session = Depends(get_session)) -> PostgresRentalRepository:
-    return PostgresRentalRepository(session=session)
 
+# -----------------
+# Client
 def get_client_repository(session: Session = Depends(get_session)) -> PostgresClientRepository:
     return PostgresClientRepository(session=session)
 
-def get_list_clients_use_case(
-    client_repo: PostgresClientRepository = Depends(get_client_repository),
-) -> ListClientsUseCase:
+
+def get_list_clients_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> ListClientsUseCase:
     return ListClientsUseCase(client_repo=client_repo)
 
 
 def get_create_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> CreateClientUseCase:
     return CreateClientUseCase(client_repo=client_repo)
 
+
 def get_update_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> UpdateClientUseCase:
     return UpdateClientUseCase(client_repo=client_repo)
 
 
-def get_create_material_use_case(
-    material_repo: PostgresMaterialRepository = Depends(get_material_repository),
-) -> CreateMaterialUseCase:
-    return CreateMaterialUseCase(material_repo=material_repo)
+# -----------------
+# Rent
+def get_rental_repository(session: Session = Depends(get_session)) -> PostgresRentalRepository:
+    return PostgresRentalRepository(session=session)
 
 
 def get_create_rental_use_case(
