@@ -7,6 +7,7 @@ from src.domain.use_cases.create_client import CreateClientUseCase
 from src.domain.use_cases.create_material import CreateMaterialUseCase
 from src.domain.use_cases.create_rental import CreateRentalUseCase
 from src.domain.use_cases.list_clients import ListClientsUseCase
+from src.domain.use_cases.update_client import UpdateClientUseCase
 from src.infrastructure.db.repositories.postgres_client_repository import PostgresClientRepository
 from src.infrastructure.db.session import get_session
 from src.infrastructure.db.repositories.postgres_material_repository import PostgresMaterialRepository
@@ -31,6 +32,9 @@ def get_list_clients_use_case(
 
 def get_create_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> CreateClientUseCase:
     return CreateClientUseCase(client_repo=client_repo)
+
+def get_update_client_use_case(client_repo: PostgresClientRepository = Depends(get_client_repository),) -> UpdateClientUseCase:
+    return UpdateClientUseCase(client_repo=client_repo)
 
 
 def get_create_material_use_case(
