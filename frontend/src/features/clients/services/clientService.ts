@@ -39,4 +39,10 @@ export const clientService = {
   deleteClient: async (id: string): Promise<void> => {
     await apiClient.delete(`/clients/${id}`);
   },
+
+  // Reativação de cliente
+  activateClient: async (id: string): Promise<Client> => {
+    const response = await apiClient.patch<Client>(`/clients/${id}/activate`);
+    return response.data;
+  },
 };
