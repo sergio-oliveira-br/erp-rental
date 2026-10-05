@@ -1,10 +1,12 @@
 # backend/src/entrypoints/routers/clients.py
 import uuid
 from typing import List
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, status, Query, HTTPException
 
+from src.domain.exceptions.domain_exceptions import EntityNotFoundException
+from src.domain.use_cases.delete_client import DeleteClientUseCase
 from src.entrypoints.dependencies import get_create_client_use_case, get_list_clients_use_case, \
-    get_update_client_use_case
+    get_update_client_use_case, get_delete_client_use_case
 from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema, PaginatedResponse, ClientUpdateSchema
 from src.domain.use_cases.create_client import CreateClientUseCase
 
@@ -67,3 +69,18 @@ def update_client(
         address=payload.address,
     )
     return updated_client
+
+# Rota de Remoção Segura
+@router.delete("/{client_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_client(
+    client_id: uuid.UUID,
+    use_case: DeleteClientUseCase = Depends(get_delete_client_use_case),
+):
+    try:
+        use_case.execute(client_id=client_id)
+        return None
+    except EntityNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
