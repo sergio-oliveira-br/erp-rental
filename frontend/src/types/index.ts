@@ -19,9 +19,7 @@ export interface PaginatedResponse<T> {
 export interface Client {
   id: string;
   name: string;
-  email: string;
   phone: string;
-  document: string; // CPF ou CNPJ
   address?: string;
   is_active: boolean;
   created_at: string;
@@ -30,9 +28,7 @@ export interface Client {
 
 export interface ClientCreatePayload {
   name: string;
-  email: string;
   phone: string;
-  document: string;
   address?: string;
 }
 
