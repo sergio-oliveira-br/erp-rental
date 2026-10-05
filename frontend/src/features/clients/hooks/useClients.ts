@@ -84,3 +84,21 @@ export function useDeleteClient() {
     },
   });
 }
+
+// Hook para Reativação
+export function useActivateClient() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => clientService.activateClient(id),
+    onSuccess: (_,) => {
+      toast.success('Cliente reativado com sucesso!', {
+        description: 'O cadastro voltou para a lista de clientes ativos.',
+      });
+      queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
+    },
+    onError: () => {
+      toast.error('Erro ao reativar o cliente.');
+    },
+  });
+}
