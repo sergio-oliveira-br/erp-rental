@@ -42,6 +42,17 @@ def list_clients(page: int = Query(1, ge=1),
         "limit": limit,
     }
 
+
+# Rota de Reativação
+@router.patch("/{client_id}/activate", response_model=ClientResponseSchema)
+def activate_client(client_id: uuid.UUID, use_case: ActivateClientUseCase = Depends(get_activate_client_use_case),):
+    try:
+        updated_client = use_case.execute(client_id=client_id)
+        return updated_client
+    except EntityNotFoundException as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
 # Rota de Criação (POST)
 @router.post("/", response_model=ClientResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_client(
