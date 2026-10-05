@@ -79,6 +79,7 @@ export function useDeleteClient() {
   return useMutation({
     mutationFn: (id: string) => clientService.deleteClient(id),
     onSuccess: () => {
+      toast.info(`Cliente removido da lista de clientes ativos!`)
       queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
     },
   });
