@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ClientCreatePayload, ClientUpdatePayload } from '@/types';
 import { clientService } from '../services/clientService';
 import type { GetClientsParams } from '../services/clientService';
+import { toast } from "sonner";
 
 // Query Keys Factory para gerenciamento seguro de cache
 export const clientKeys = {
@@ -38,9 +39,17 @@ export function useCreateClient() {
 
   return useMutation({
     mutationFn: (payload: ClientCreatePayload) => clientService.createClient(payload),
-    onSuccess: () => {
+    onSuccess: (newClient) => {
       // Invalida a lista para forçar o refetch e atualizar a tabela
       queryClient.invalidateQueries({ queryKey: clientKeys.lists() });
+
+      // Notificação global disparada automaticamente!
+      toast.success('Cliente cadastrado com sucesso!', {
+        description: `${newClient.name} foi adicionado à base.`,
+      });
+    },
+    onError: () => {
+      toast.error('Erro ao cadastrar cliente. Verifique os dados enviados.');
     },
   });
 }
