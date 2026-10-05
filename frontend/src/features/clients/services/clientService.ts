@@ -31,7 +31,7 @@ export const clientService = {
 
   // Atualização parcial/total de cliente
   updateClient: async (id: string, payload: ClientUpdatePayload): Promise<Client> => {
-    const response = await apiClient.put<Client>(`/v1/clients/${id}`, payload);
+    const response = await apiClient.put<Client>(`/clients/${id}`, payload);
     return response.data;
   },
 
