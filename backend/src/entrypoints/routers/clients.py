@@ -1,10 +1,11 @@
 # backend/src/entrypoints/routers/clients.py
-
+import uuid
 from typing import List
 from fastapi import APIRouter, Depends, status, Query
 
-from src.entrypoints.dependencies import get_create_client_use_case, get_list_clients_use_case
-from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema, PaginatedResponse
+from src.entrypoints.dependencies import get_create_client_use_case, get_list_clients_use_case, \
+    get_update_client_use_case
+from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema, PaginatedResponse, ClientUpdateSchema
 from src.domain.use_cases.create_client import CreateClientUseCase
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
@@ -50,3 +51,20 @@ def create_client(
         phone=payload.phone,
         address=payload.address,
     )
+
+
+# Rota de Edição (PUT / PATCH)
+@router.put("/{client_id}", response_model=ClientResponseSchema)
+def update_client(
+    client_id: uuid.UUID,
+    payload: ClientUpdateSchema,
+    use_case = Depends(get_update_client_use_case),
+):
+    print('Metodo acessado, e estou enviando o client: ', client_id)
+    updated_client = use_case.execute(
+        client_id=client_id,
+        name=payload.name,
+        phone=payload.phone,
+        address=payload.address,
+    )
+    return updated_client
