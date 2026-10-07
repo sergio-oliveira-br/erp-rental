@@ -15,7 +15,7 @@ class ClientRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    def list_all(self, active_only: bool = True) -> List[Client]:
+    def list_all(self, is_active: bool = True) -> List[Client]:
         pass
 
     @abstractmethod
