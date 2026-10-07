@@ -131,7 +131,7 @@ export function ClientsPage() {
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <Input
             type="text"
-            placeholder="Buscar por nome, e-mail ou documento..."
+            placeholder="Buscar por nome..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
