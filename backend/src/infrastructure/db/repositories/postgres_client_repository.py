@@ -44,10 +44,10 @@ class PostgresClientRepository(ClientRepositoryPort):
         model = self.session.get(ClientTable, client_id)
         return self._to_entity(model) if model else None
 
-    def list_all(self, is_active: bool = True) -> List[Client]:
+    def list_all(self, is_active: Optional[bool] = None) -> List[Client]:
         statement = select(ClientTable)
-        if is_active:
-            statement = statement.where(ClientTable.is_active == True)
+        if is_active is not None:
+            statement = statement.where(ClientTable.is_active == is_active)
         results = self.session.exec(statement).all()
         return [self._to_entity(model) for model in results]
 
