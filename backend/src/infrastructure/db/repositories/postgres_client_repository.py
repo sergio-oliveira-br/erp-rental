@@ -53,6 +53,7 @@ class PostgresClientRepository(ClientRepositoryPort):
 
     def update(self, client: Client) -> Client:
         model = self._to_model(client)
-        self.session.merge(model)
+        merged_model = self.session.merge(model)
         self.session.commit()
-        return client
+        self.session.refresh(merged_model)
+        return self._to_entity(merged_model)
