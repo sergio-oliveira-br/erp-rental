@@ -1,6 +1,6 @@
 // frontend/src/features/materials/components/MaterialTable.tsx
 
-import { Edit2, Trash2, RotateCcw, Package, CheckCircle2, XCircle } from 'lucide-react';
+import {Edit2, Trash2, RotateCcw, Package, CheckCircle2, XCircle, CheckCircle} from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import type { Material } from '@/types';
@@ -55,6 +55,7 @@ export function MaterialTable({
               <th className="px-6 py-3">Material / Equipamento</th>
               <th className="px-6 py-3">Diária (R$)</th>
               <th className="px-6 py-3">Disponibilidade</th>
+              <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3 text-right">Ações</th>
             </tr>
           </thead>
@@ -78,6 +79,17 @@ export function MaterialTable({
                   ) : (
                     <Badge variant="gray" className="gap-1">
                       <XCircle className="w-3 h-3" /> Em Uso / Locado
+                    </Badge>
+                  )}
+                </td>
+               <td className="px-6 py-4">
+                  {material.is_active ? (
+                    <Badge variant="success" className="gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Ativo
+                    </Badge>
+                  ) : (
+                    <Badge variant="danger" className="gap-1">
+                      <XCircle className="w-3 h-3" /> Inativo
                     </Badge>
                   )}
                 </td>
