@@ -86,7 +86,9 @@ class RentalResponseSchema(BaseModel):
 
     id: uuid.UUID
     client_id: uuid.UUID
+    client_name: Optional[str] = None
     material_id: uuid.UUID
+    material_name: Optional[str] = None
     start_date: date
     end_date: date
     daily_rate: Decimal
