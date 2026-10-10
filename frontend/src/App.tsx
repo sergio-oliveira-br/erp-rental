@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
 });
 
 export function App() {
-  const [currentTab, setCurrentTab] = useState<'clients' | 'materials' | 'rentals'>('clients');
+  const [currentTab, setCurrentTab] = useState<'clients' | 'materials' | 'rentals'>('rentals');
 
   return (
     <QueryClientProvider client={queryClient}>
