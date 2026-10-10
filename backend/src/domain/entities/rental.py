@@ -56,3 +56,6 @@ class Rental:
 
     def cancel(self) -> None:
         self.status = RentalStatus.CANCELLED
+    def reactivate(self) -> None:
+        """Reabre um contrato que foi finalizado ou cancelado por engano."""
+        self.status = RentalStatus.ACTIVE
