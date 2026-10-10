@@ -58,6 +58,7 @@ export interface Material {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  is_available: string
 }
 
 export interface MaterialCreatePayload {
@@ -68,7 +69,17 @@ export interface MaterialCreatePayload {
 }
 
 export interface MaterialUpdatePayload extends Partial<MaterialCreatePayload> {
-  status?: MaterialStatus;
+  name: string;
+  daily_rate: number;
+  description?: string;
+  is_available?: boolean;
+  is_active?: boolean;
+}
+
+export interface GetMaterialsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
   is_active?: boolean;
 }
 
