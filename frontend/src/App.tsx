@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ClientsPage } from '@/features/clients/components/ClientsPage';
 import { ToastProvider } from '@/components/ui/Toaster';
 import { Navbar } from '@/components/layout/Navbar.tsx';
-import { Package } from 'lucide-react';
 import {MaterialsPage} from "@/features/materials/components/MaterialsPage.tsx";
+import {RentalsPage} from "@/features/rentals/components/RentalsPage.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +19,7 @@ const queryClient = new QueryClient({
 });
 
 export function App() {
-  const [currentTab, setCurrentTab] = useState<'clients' | 'materials'>('clients');
+  const [currentTab, setCurrentTab] = useState<'clients' | 'materials' | 'rentals'>('clients');
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -31,6 +31,7 @@ export function App() {
         <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
           {currentTab === 'clients' && <ClientsPage />}
           {currentTab === 'materials' && <MaterialsPage />}
+          {currentTab === 'rentals' && <RentalsPage />}
         </main>
       </div>
     </QueryClientProvider>
