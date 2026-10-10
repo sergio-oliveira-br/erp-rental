@@ -4,7 +4,8 @@ from abc import ABC, abstractmethod
 from datetime import date
 from typing import List, Optional
 import uuid
-from src.domain.entities.rental import Rental
+from src.domain.entities.rental import Rental, RentalStatus
+
 
 class RentalRepositoryPort(ABC):
     @abstractmethod
@@ -25,4 +26,8 @@ class RentalRepositoryPort(ABC):
 
     @abstractmethod
     def update(self, rental: Rental) -> Rental:
+        pass
+
+    @abstractmethod
+    def list_all(self, status: Optional[RentalStatus] = None) -> List[Rental]:
         pass
