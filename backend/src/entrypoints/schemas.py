@@ -44,9 +44,9 @@ class ClientUpdateSchema(BaseModel):
 
 # --- MATERIAL SCHEMAS ---
 class MaterialCreateSchema(BaseModel):
-    name: str = Field(..., min_length=2, max_length=100, example="Betoneira 400L")
-    daily_rate: Decimal = Field(..., gt=0, example=80.00)
-    description: Optional[str] = Field(None, example="Betoneira monofásica 220V")
+    name: str = Field(..., min_length=2, max_length=100, description="Nome do material/equipamento")
+    daily_rate: Decimal = Field(..., gt=0, description="Valor da taxa diária de locação")
+    description: Optional[str] = None
 
 
 class MaterialResponseSchema(BaseModel):
