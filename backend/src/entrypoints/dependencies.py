@@ -5,7 +5,11 @@ from sqlmodel import Session
 
 from src.domain.use_cases.client.activate_client import ActivateClientUseCase
 from src.domain.use_cases.client.create_client import CreateClientUseCase
+from src.domain.use_cases.material.activate_material import ActivateMaterialUseCase
 from src.domain.use_cases.material.create_material import CreateMaterialUseCase
+from src.domain.use_cases.material.delete_material import DeleteMaterialUseCase
+from src.domain.use_cases.material.list_materials import ListMaterialsUseCase
+from src.domain.use_cases.material.update_material import UpdateMaterialUseCase
 from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
 from src.domain.use_cases.client.delete_client import DeleteClientUseCase
 from src.domain.use_cases.client.list_clients import ListClientsUseCase
@@ -22,6 +26,18 @@ def get_material_repository(session: Session = Depends(get_session)) -> Postgres
 
 def get_create_material_use_case(material_repo: PostgresMaterialRepository = Depends(get_material_repository),) -> CreateMaterialUseCase:
     return CreateMaterialUseCase(material_repo=material_repo)
+
+def get_list_materials_use_case(material_repo: PostgresMaterialRepository = Depends(get_material_repository),) -> ListMaterialsUseCase:
+    return ListMaterialsUseCase(material_repo=material_repo)
+
+def get_update_material_use_case(material_repo: PostgresMaterialRepository = Depends(get_material_repository),) -> UpdateMaterialUseCase:
+    return UpdateMaterialUseCase(material_repo=material_repo)
+
+def get_delete_material_use_case(material_repo: PostgresMaterialRepository = Depends(get_material_repository),) -> DeleteMaterialUseCase:
+    return DeleteMaterialUseCase(material_repo=material_repo)
+
+def get_activate_material_use_case(material_repo: PostgresMaterialRepository = Depends(get_material_repository),) -> ActivateMaterialUseCase:
+    return ActivateMaterialUseCase(material_repo=material_repo)
 
 
 # -----------------
