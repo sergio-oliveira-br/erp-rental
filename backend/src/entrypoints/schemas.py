@@ -100,6 +100,6 @@ class RentalResponseSchema(BaseModel):
     delivery_address: Optional[str]
     notes: Optional[str]
     enable_sms_notification: bool
-    status: RentalStatus
+    status: RentalStatus = Field(..., validation_alias="status", serialization_alias="rental_status")
     payment_status: PaymentStatus
     created_at: datetime
