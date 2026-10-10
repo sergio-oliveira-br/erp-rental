@@ -92,8 +92,11 @@ class RentalResponseSchema(BaseModel):
     start_date: date
     end_date: date
     daily_rate: Decimal
+
+    # Propriedades calculadas pela Entidade de Domínio
     total_days: int
-    total_amount: Decimal
+    total_amount: Decimal = Field(..., serialization_alias="total_value")
+
     delivery_address: Optional[str]
     notes: Optional[str]
     enable_sms_notification: bool
