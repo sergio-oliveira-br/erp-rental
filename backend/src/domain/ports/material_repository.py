@@ -15,7 +15,7 @@ class MaterialRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    def list_all(self, active_only: bool = True) -> List[Material]:
+    def list_all(self, is_active: Optional[bool] = True) -> List[Material]:
         pass
 
     @abstractmethod
