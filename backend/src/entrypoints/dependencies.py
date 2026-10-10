@@ -14,6 +14,8 @@ from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
 from src.domain.use_cases.client.delete_client import DeleteClientUseCase
 from src.domain.use_cases.client.list_clients import ListClientsUseCase
 from src.domain.use_cases.client.update_client import UpdateClientUseCase
+from src.domain.use_cases.rental.finish_rental import FinishRentalUseCase
+from src.domain.use_cases.rental.list_rentals import ListRentalsUseCase
 from src.infrastructure.db.repositories.postgres_client_repository import PostgresClientRepository
 from src.infrastructure.db.session import get_session
 from src.infrastructure.db.repositories.postgres_material_repository import PostgresMaterialRepository
@@ -76,3 +78,10 @@ def get_create_rental_use_case(
         client_repo=client_repo,
         material_repo=material_repo,
     )
+
+def get_list_rentals_use_case(rental_repo: PostgresRentalRepository = Depends(get_rental_repository),) -> ListRentalsUseCase:
+    return ListRentalsUseCase(rental_repo=rental_repo)
+
+def get_finish_rental_use_case(rental_repo: PostgresRentalRepository = Depends(get_rental_repository),
+                               material_repo: PostgresMaterialRepository = Depends(get_material_repository),) -> FinishRentalUseCase:
+    return FinishRentalUseCase(rental_repo=rental_repo, material_repo=material_repo)
