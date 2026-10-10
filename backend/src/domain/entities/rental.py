@@ -28,6 +28,8 @@ class Rental:
     status: RentalStatus = RentalStatus.ACTIVE
     payment_status: PaymentStatus = PaymentStatus.PENDING
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    client_name: Optional[str] = None
+    material_name: Optional[str] = None
 
     @property
     def total_days(self) -> int:
