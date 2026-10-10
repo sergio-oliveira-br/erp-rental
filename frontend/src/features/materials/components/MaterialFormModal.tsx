@@ -64,6 +64,7 @@ export function MaterialFormModal({ isOpen, onClose, materialToEdit }: MaterialF
         name,
         daily_rate: numericRate,
         description: description || undefined,
+        category: ""
       });
     }
 
