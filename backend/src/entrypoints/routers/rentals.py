@@ -8,8 +8,9 @@ from src.domain.entities.rental import RentalStatus
 from src.domain.exceptions.domain_exceptions import EntityNotFoundException, DomainException
 from src.domain.use_cases.rental.finish_rental import FinishRentalUseCase
 from src.domain.use_cases.rental.list_rentals import ListRentalsUseCase
+from src.domain.use_cases.rental.reactivate_rental import ReactivateRentalUseCase
 from src.entrypoints.dependencies import get_create_rental_use_case, get_list_rentals_use_case, \
-    get_finish_rental_use_case
+    get_finish_rental_use_case, get_reactivate_rental_use_case
 from src.entrypoints.schemas import RentalCreateSchema, RentalResponseSchema, PaginatedResponse
 from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
 
@@ -53,6 +54,15 @@ def list_rentals(page: int = Query(1, ge=1),
 
 @router.patch("/{rental_id}/finish", response_model=RentalResponseSchema)
 def finish_rental(rental_id: uuid.UUID, use_case: FinishRentalUseCase = Depends(get_finish_rental_use_case),):
+    try:
+        return use_case.execute(rental_id=rental_id)
+    except (EntityNotFoundException, DomainException) as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+
+@router.patch("/{rental_id}/reactivate", response_model=RentalResponseSchema)
+def reactivate_rental(rental_id: uuid.UUID, use_case: ReactivateRentalUseCase = Depends(get_reactivate_rental_use_case), get_reactivate_rental_use_case=None):
     try:
         return use_case.execute(rental_id=rental_id)
     except (EntityNotFoundException, DomainException) as e:
