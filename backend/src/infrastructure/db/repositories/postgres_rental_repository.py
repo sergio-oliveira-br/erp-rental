@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from src.domain.entities.rental import PaymentStatus, Rental, RentalStatus
 from src.domain.ports.rental_repository import RentalRepositoryPort
-from src.infrastructure.db.models import RentalTable
+from src.infrastructure.db.models import RentalTable, ClientTable, MaterialTable
 
 
 class PostgresRentalRepository(RentalRepositoryPort):
@@ -54,15 +54,41 @@ class PostgresRentalRepository(RentalRepositoryPort):
         return self._to_entity(model)
 
     def get_by_id(self, rental_id: uuid.UUID) -> Optional[Rental]:
-        model = self.session.get(RentalTable, rental_id)
-        return self._to_entity(model) if model else None
+        statement = (
+            select(RentalTable, ClientTable.name, MaterialTable.name)
+            .join(ClientTable, RentalTable.client_id == ClientTable.id)
+            .join(MaterialTable, RentalTable.material_id == MaterialTable.id)
+            .where(RentalTable.id == rental_id)
+        )
+        result = self.session.exec(statement).first()
+        if not result:
+            return None
+
+        model, client_name, material_name = result
+        entity = self._to_entity(model)
+        entity.client_name = client_name
+        entity.material_name = material_name
+        return entity
 
     def list_all(self, status: Optional[RentalStatus] = None) -> List[Rental]:
-        statement = select(RentalTable)
+        # Consulta com JOIN nas tabelas de clientes e materiais
+        statement = (
+            select(RentalTable, ClientTable.name, MaterialTable.name)
+            .join(ClientTable, RentalTable.client_id == ClientTable.id)
+            .join(MaterialTable, RentalTable.material_id == MaterialTable.id)
+        )
         if status:
             statement = statement.where(RentalTable.status == status.value)
         results = self.session.exec(statement).all()
-        return [self._to_entity(m) for m in results]
+
+        rentals = []
+        for model, client_name, material_name in results:
+            entity = self._to_entity(model)
+            entity.client_name = client_name
+            entity.material_name = material_name
+            rentals.append(entity)
+
+        return rentals
 
     def list_by_client(self, client_id: uuid.UUID) -> List[Rental]:
         statement = select(RentalTable).where(RentalTable.client_id == client_id)
