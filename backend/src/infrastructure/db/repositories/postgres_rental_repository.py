@@ -1,6 +1,6 @@
 # backend/src/infrastructure/db/repositories/postgres_rental_repository.py
 
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional
 import uuid
 from sqlmodel import Session, select
@@ -15,12 +15,16 @@ class PostgresRentalRepository(RentalRepositoryPort):
         self.session = session
 
     def _to_entity(self, model: RentalTable) -> Rental:
+
+        start_d = model.start_date.date() if isinstance(model.start_date, datetime) else model.start_date
+        end_d = model.end_date.date() if isinstance(model.end_date, datetime) else model.end_date
+
         return Rental(
             id=model.id,
             client_id=model.client_id,
             material_id=model.material_id,
-            start_date=model.start_date,
-            end_date=model.end_date,
+            start_date=start_d,
+            end_date=end_d,
             daily_rate=model.daily_rate,
             delivery_address=model.delivery_address,
             notes=model.notes,
