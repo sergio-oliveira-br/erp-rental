@@ -48,6 +48,11 @@ class MaterialCreateSchema(BaseModel):
     daily_rate: Decimal = Field(..., gt=0, description="Valor da taxa diária de locação")
     description: Optional[str] = None
 
+class MaterialUpdateSchema(BaseModel):
+    name: str
+    daily_rate: Decimal = Field(..., gt=0)
+    description: Optional[str] = None
+    is_available: bool = True
 
 class MaterialResponseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
