@@ -16,9 +16,9 @@ from sqlmodel import Session
 from src.infrastructure.db.repositories.postgres_client_repository import PostgresClientRepository
 from src.infrastructure.db.repositories.postgres_material_repository import PostgresMaterialRepository
 from src.infrastructure.db.repositories.postgres_rental_repository import PostgresRentalRepository
-from src.domain.use_cases.create_client import CreateClientUseCase
-from src.domain.use_cases.create_material import CreateMaterialUseCase
-from src.domain.use_cases.create_rental import CreateRentalUseCase
+from src.domain.use_cases.client.create_client import CreateClientUseCase
+from src.domain.use_cases.material.create_material import CreateMaterialUseCase
+from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
 
 
 def main():

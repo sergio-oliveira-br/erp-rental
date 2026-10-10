@@ -1,8 +1,8 @@
 # backend/src/entrypoints/api/v1/materials.py
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from src.domain.ports.material_repository import MaterialRepositoryPort
-from src.domain.use_cases.create_material import CreateMaterialUseCase
+from src.domain.use_cases.material.create_material import CreateMaterialUseCase
 from src.entrypoints.dependencies import get_material_repository
 from src.entrypoints.schemas import MaterialResponseSchema, MaterialCreateSchema
 

@@ -1,15 +1,14 @@
 # backend/src/entrypoints/routers/clients.py
 import uuid
-from typing import List
 from fastapi import APIRouter, Depends, status, Query, HTTPException
 
 from src.domain.exceptions.domain_exceptions import EntityNotFoundException
-from src.domain.use_cases.activate_client import ActivateClientUseCase
-from src.domain.use_cases.delete_client import DeleteClientUseCase
+from src.domain.use_cases.client.activate_client import ActivateClientUseCase
+from src.domain.use_cases.client.delete_client import DeleteClientUseCase
 from src.entrypoints.dependencies import get_create_client_use_case, get_list_clients_use_case, \
     get_update_client_use_case, get_delete_client_use_case, get_activate_client_use_case
 from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema, PaginatedResponse, ClientUpdateSchema
-from src.domain.use_cases.create_client import CreateClientUseCase
+from src.domain.use_cases.client.create_client import CreateClientUseCase
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 

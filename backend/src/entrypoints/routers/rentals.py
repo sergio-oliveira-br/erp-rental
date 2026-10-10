@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, status
 from src.entrypoints.dependencies import get_create_rental_use_case
 from src.entrypoints.schemas import RentalCreateSchema, RentalResponseSchema
-from src.domain.use_cases.create_rental import CreateRentalUseCase
+from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
 
 router = APIRouter(prefix="/rentals", tags=["Rentals"])
 
