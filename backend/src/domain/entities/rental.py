@@ -1,3 +1,5 @@
+# backend/src/domain/entities/rental.py
+
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from decimal import Decimal
@@ -34,7 +36,9 @@ class Rental:
     @property
     def total_days(self) -> int:
         """Calcula a quantidade de dias do contrato de aluguel."""
-        delta = (self.end_date - self.start_date).days
+        start = self.start_date.date() if isinstance(self.start_date, datetime) else self.start_date
+        end = self.end_date.date() if isinstance(self.end_date, datetime) else self.end_date
+        delta = (end - start).days
         return max(delta, 1)
 
     @property
