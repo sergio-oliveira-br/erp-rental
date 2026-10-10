@@ -60,7 +60,8 @@ class CreateRentalUseCase:
         )
 
         saved_rental = self.rental_repo.save(rental)
-        material.set_availability(False)
-        self.material_repo.update(material)
+        # Não irei definir availability neste momento
+        # material.set_availability(False)
+        # self.material_repo.update(material)
 
         return saved_rental
