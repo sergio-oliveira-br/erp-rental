@@ -43,3 +43,10 @@ class Rental:
     def is_expiring_on(self, target_date: date) -> bool:
         """Verifica se o aluguel encerra em uma data específica."""
         return self.status == RentalStatus.ACTIVE and self.end_date == target_date
+
+    def finish(self, return_date: date) -> None:
+        self.end_date = return_date
+        self.status = RentalStatus.FINISHED
+
+    def cancel(self) -> None:
+        self.status = RentalStatus.CANCELLED
