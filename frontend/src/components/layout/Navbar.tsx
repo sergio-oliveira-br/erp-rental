@@ -3,8 +3,8 @@
 import { Users, Package } from 'lucide-react';
 
 interface NavbarProps {
-  currentTab: 'clients' | 'materials';
-  onSelectTab: (tab: 'clients' | 'materials') => void;
+  currentTab: 'clients' | 'materials' | 'rentals';
+  onSelectTab: (tab: 'clients' | 'materials' | 'rentals') => void;
 }
 
 export function Navbar({ currentTab, onSelectTab }: NavbarProps) {
@@ -17,6 +17,11 @@ export function Navbar({ currentTab, onSelectTab }: NavbarProps) {
     {
       id: 'materials' as const,
       label: 'Materiais',
+      icon: Package,
+    },
+    {
+      id: 'rentals' as const,
+      label: 'Locação',
       icon: Package,
     },
   ];
