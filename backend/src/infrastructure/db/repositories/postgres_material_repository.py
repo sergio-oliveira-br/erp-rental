@@ -46,10 +46,10 @@ class PostgresMaterialRepository(MaterialRepositoryPort):
         model = self.session.get(MaterialTable, material_id)
         return self._to_entity(model) if model else None
 
-    def list_all(self, active_only: bool = True) -> List[Material]:
+    def list_all(self, is_active: Optional[bool] = None) -> List[Material]:
         statement = select(MaterialTable)
-        if active_only:
-            statement = statement.where(MaterialTable.is_active == True)
+        if is_active:
+            statement = statement.where(MaterialTable.is_active == is_active)
         results = self.session.exec(statement).all()
         return [self._to_entity(m) for m in results]
 
