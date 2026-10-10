@@ -57,6 +57,13 @@ class PostgresRentalRepository(RentalRepositoryPort):
         model = self.session.get(RentalTable, rental_id)
         return self._to_entity(model) if model else None
 
+    def list_all(self, status: Optional[RentalStatus] = None) -> List[Rental]:
+        statement = select(RentalTable)
+        if status:
+            statement = statement.where(RentalTable.status == status.value)
+        results = self.session.exec(statement).all()
+        return [self._to_entity(m) for m in results]
+
     def list_by_client(self, client_id: uuid.UUID) -> List[Rental]:
         statement = select(RentalTable).where(RentalTable.client_id == client_id)
         results = self.session.exec(statement).all()
