@@ -126,7 +126,15 @@ export interface RentalCreatePayload {
   material_id: string;
   start_date: string;
   end_date: string;
-  enable_sms_notification: boolean;
+  delivery_address?: string;
+  notes?: string;
+  enable_sms_notification?: boolean;
+}
+
+export interface GetRentalsParams {
+  page?: number;
+  limit?: number;
+  status?: RentalStatus;
 }
 
 export interface PaymentRegisterPayload {
