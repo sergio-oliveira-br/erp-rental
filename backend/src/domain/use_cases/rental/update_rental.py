@@ -26,4 +26,6 @@ class UpdateRentalUseCase:
                 raise DomainException("A data final não pode ser anterior à data inicial.")
             rental.end_date = end_date
 
+        self.rental_repo.add_audit_log(rental.id, "ATUALIZADO", "Dados operacionais (endereço/notas/prazo) atualizados.")
+
         return self.rental_repo.update(rental)
