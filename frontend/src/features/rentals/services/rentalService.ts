@@ -5,12 +5,13 @@ import type {
   Rental,
   RentalCreatePayload,
   GetRentalsParams,
-  PaginatedResponse, PaymentStatus,
+  PaymentStatus,
 } from '@/types';
 
 export const rentalService = {
-  getRentals: async (params?: GetRentalsParams): Promise<PaginatedResponse<Rental>> => {
-    const response = await apiClient.get<PaginatedResponse<Rental>>('/rentals/', { params });
+
+  async getRentals(params?: GetRentalsParams): Promise<Rental[]> {
+    const response = await apiClient.get<Rental[]>('/rentals/', { params });
     return response.data;
   },
 
