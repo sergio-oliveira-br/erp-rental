@@ -22,5 +22,6 @@ class FinishRentalUseCase:
 
         effective_return_date = return_date or date.today()
         rental.finish(return_date=effective_return_date)
+        self.rental_repo.add_audit_log(rental.id, "FINALIZADO", f"Locação finalizada/equipamento devolvido.")
 
         return self.rental_repo.update(rental)
