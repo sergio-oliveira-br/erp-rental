@@ -69,16 +69,10 @@ def get_activate_client_use_case(client_repo: PostgresClientRepository = Depends
 def get_rental_repository(session: Session = Depends(get_session)) -> PostgresRentalRepository:
     return PostgresRentalRepository(session=session)
 
-def get_create_rental_use_case(
-    rental_repo: PostgresRentalRepository = Depends(get_rental_repository),
-    client_repo: PostgresClientRepository = Depends(get_client_repository),
-    material_repo: PostgresMaterialRepository = Depends(get_material_repository),
-) -> CreateRentalUseCase:
-    return CreateRentalUseCase(
-        rental_repo=rental_repo,
-        client_repo=client_repo,
-        material_repo=material_repo,
-    )
+def get_create_rental_use_case(rental_repo: PostgresRentalRepository = Depends(get_rental_repository),
+                               client_repo: PostgresClientRepository = Depends(get_client_repository),
+                                material_repo: PostgresMaterialRepository = Depends(get_material_repository),) -> CreateRentalUseCase:
+    return CreateRentalUseCase(rental_repo=rental_repo, client_repo=client_repo, material_repo=material_repo,)
 
 def get_list_rentals_use_case(rental_repo: PostgresRentalRepository = Depends(get_rental_repository),) -> ListRentalsUseCase:
     return ListRentalsUseCase(rental_repo=rental_repo)
