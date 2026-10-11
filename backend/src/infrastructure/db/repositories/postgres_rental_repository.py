@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 
 from src.domain.entities.rental import PaymentStatus, Rental, RentalStatus
 from src.domain.ports.rental_repository import RentalRepositoryPort
-from src.infrastructure.db.models import RentalTable, ClientTable, MaterialTable
+from src.infrastructure.db.models import RentalTable, ClientTable, MaterialTable, RentalAuditLogTable
 
 
 class PostgresRentalRepository(RentalRepositoryPort):
@@ -112,3 +112,29 @@ class PostgresRentalRepository(RentalRepositoryPort):
         self.session.merge(model)
         self.session.commit()
         return rental
+
+    def add_audit_log(self, rental_id: uuid.UUID, action: str, description: str) -> None:
+        log_model = RentalAuditLogTable(
+            rental_id=rental_id,
+            action=action,
+            description=description
+        )
+        self.session.add(log_model)
+        self.session.commit()
+
+    def get_audit_logs(self, rental_id: uuid.UUID) -> List[dict]:
+        statement = (
+            select(RentalAuditLogTable)
+            .where(RentalAuditLogTable.rental_id == rental_id)
+            .order_by(RentalAuditLogTable.created_at.desc())
+        )
+        results = self.session.exec(statement).all()
+        return [
+            {
+                "id": log.id,
+                "action": log.action,
+                "description": log.description,
+                "created_at": log.created_at
+            }
+            for log in results
+        ]
