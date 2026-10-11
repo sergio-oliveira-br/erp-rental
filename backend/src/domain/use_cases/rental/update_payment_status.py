@@ -16,4 +16,5 @@ class UpdatePaymentStatusUseCase:
             raise EntityNotFoundException("Locação não encontrada.")
 
         rental.payment_status = payment_status
+        self.rental_repo.add_audit_log(rental.id, "PAGAMENTO ATUALIZADO",f"Status de pagamento alterado para {payment_status}.")
         return self.rental_repo.update(rental)
