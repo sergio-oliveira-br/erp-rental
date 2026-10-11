@@ -33,7 +33,8 @@ def create_rental(payload: RentalCreateSchema, use_case: CreateRentalUseCase = D
             end_date=payload.end_date,
             delivery_address=payload.delivery_address,
             notes=payload.notes,
-            enable_sms_notification=payload.enable_sms_notification
+            enable_sms_notification=payload.enable_sms_notification,
+            daily_rate=payload.daily_rate
         )
     except (EntityNotFoundException, DomainException) as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
