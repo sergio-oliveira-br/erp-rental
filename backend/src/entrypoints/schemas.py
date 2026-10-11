@@ -103,3 +103,7 @@ class RentalResponseSchema(BaseModel):
     status: RentalStatus = Field(..., validation_alias="status", serialization_alias="rental_status")
     payment_status: PaymentStatus
     created_at: datetime
+
+
+class RentalPaymentUpdateSchema(BaseModel):
+    payment_status: PaymentStatus
