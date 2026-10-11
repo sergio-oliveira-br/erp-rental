@@ -79,6 +79,10 @@ class RentalCreateSchema(BaseModel):
     )
     notes: Optional[str] = Field(None, example="Entregar na portaria técnica")
     enable_sms_notification: bool = False
+    daily_rate: Optional[Decimal] = Field(
+        None,
+        description="Valor da diária negociada. Se não informado, usará o valor padrão do material."
+    )
 
 
 class RentalResponseSchema(BaseModel):
