@@ -1,14 +1,19 @@
 // frontend/src/components/layout/Navbar.tsx
 
-import { Users, Package } from 'lucide-react';
+import { Users, Package, LayoutDashboard } from 'lucide-react';
 
 interface NavbarProps {
-  currentTab: 'clients' | 'materials' | 'rentals';
-  onSelectTab: (tab: 'clients' | 'materials' | 'rentals') => void;
+  currentTab: 'welcome' | 'clients' | 'materials' | 'rentals';
+  onSelectTab: (tab: 'welcome' | 'clients' | 'materials' | 'rentals') => void;
 }
 
 export function Navbar({ currentTab, onSelectTab }: NavbarProps) {
   const navItems = [
+    {
+      id: 'welcome' as const,
+      label: 'Início',
+      icon: LayoutDashboard,
+    },
     {
       id: 'clients' as const,
       label: 'Clientes',
