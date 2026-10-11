@@ -1,6 +1,6 @@
 // frontend/src/features/rentals/components/RentalTable.tsx
 
-import { CheckCircle, Clock, RotateCcw, DollarSign } from 'lucide-react';
+import { CheckCircle, Clock, RotateCcw, DollarSign, MapPin, FileText, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { RentalStatus, PaymentStatus, type Rental } from '@/types';
@@ -11,6 +11,7 @@ interface RentalTableProps {
   onFinishRental: (id: string) => void;
   onReactivateRental: (id: string) => void;
   onTogglePaymentStatus: (id: string, currentStatus: PaymentStatus) => void;
+  onSelectRental: (rental: Rental) => void; // Abre o Modal de Detalhes
 }
 
 export function RentalTable({
@@ -19,11 +20,21 @@ export function RentalTable({
   onFinishRental,
   onReactivateRental,
   onTogglePaymentStatus,
+  onSelectRental,
 }: RentalTableProps) {
   if (isLoading) {
     return (
       <div className="w-full bg-white rounded-xl border border-gray-200 p-8 text-center text-gray-500">
         Carregando lista de locações...
+      </div>
+    );
+  }
+
+  if (rentals.length === 0) {
+    return (
+      <div className="w-full bg-white rounded-xl border border-gray-200 p-12 text-center">
+        <p className="text-gray-600 font-medium text-sm">Nenhum contrato de locação encontrado.</p>
+        <p className="text-xs text-gray-400 mt-1">Clique em "Nova Locação" para registrar um contrato.</p>
       </div>
     );
   }
@@ -34,8 +45,7 @@ export function RentalTable({
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              <th className="px-6 py-3">Cliente</th>
-              <th className="px-6 py-3">Material</th>
+              <th className="px-6 py-3">Cliente / Equipamento</th>
               <th className="px-6 py-3">Período</th>
               <th className="px-6 py-3">Valor Total</th>
               <th className="px-6 py-3">Pagamento</th>
@@ -47,19 +57,46 @@ export function RentalTable({
             {rentals.map((rental) => {
               const isPaid = rental.payment_status === PaymentStatus.PAID;
               const isActive = (rental.rental_status || (rental as any).status) === RentalStatus.ACTIVE;
+              const hasAddress = Boolean(rental.delivery_address);
+              const hasNotes = Boolean(rental.notes);
 
               return (
-                <tr key={rental.id} className="hover:bg-gray-50/80 transition-colors">
-                  <td className="px-6 py-4 font-medium text-gray-900">
-                    {rental.client_name || rental.client_id}
+                <tr key={rental.id} className="hover:bg-gray-50/80 transition-colors group">
+
+                  {/* Prioridade 1: Cliente, Material + Prioridade 2: Indicadores de Endereço/Notas */}
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-gray-900 flex items-center gap-2">
+                      {rental.client_name || rental.client_id}
+
+                      {/* Indicadores Visuais Prioridade 2 */}
+                      <div className="flex items-center gap-1">
+                        {hasAddress && (
+                          <span title={`Obra/Entrega: ${rental.delivery_address}`} className="text-amber-600 bg-amber-50 p-1 rounded-md cursor-help inline-flex">
+                            <MapPin className="w-3.5 h-3.5" />
+                          </span>
+                        )}
+                        {hasNotes && (
+                          <span title={`Observação: ${rental.notes}`} className="text-blue-600 bg-blue-50 p-1 rounded-md cursor-help inline-flex">
+                            <FileText className="w-3.5 h-3.5" />
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-0.5">{rental.material_name || rental.material_id}</div>
                   </td>
-                  <td className="px-6 py-4 text-gray-700">
-                    {rental.material_name || rental.material_id}
+
+                  {/* Período + Quantidade de Dias */}
+                  <td className="px-6 py-4">
+                    <div className="text-xs text-gray-700">
+                      {new Date(rental.start_date).toLocaleDateString('pt-BR')} até{' '}
+                      {new Date(rental.end_date).toLocaleDateString('pt-BR')}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-0.5 font-medium">
+                      {rental.total_days} {rental.total_days === 1 ? 'dia' : 'dias'}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-xs text-gray-600">
-                    {new Date(rental.start_date).toLocaleDateString('pt-BR')} até{' '}
-                    {new Date(rental.end_date).toLocaleDateString('pt-BR')}
-                  </td>
+
+                  {/* Valor Total */}
                   <td className="px-6 py-4 font-semibold text-gray-900">
                     R$ {Number(rental.total_value ?? rental.total_value ?? 0).toFixed(2).replace('.', ',')}
                   </td>
@@ -73,8 +110,8 @@ export function RentalTable({
                           isPaid ? PaymentStatus.PENDING : PaymentStatus.PAID
                         )
                       }
-                      title="Clique para alterar o status do pagamento"
-                      className="cursor-pointer"
+                      title="Clique para alternar status do pagamento"
+                      className="cursor-pointer transition-transform active:scale-95"
                     >
                       {isPaid ? (
                         <Badge variant="success" className="gap-1">
@@ -101,9 +138,19 @@ export function RentalTable({
                     )}
                   </td>
 
-                  {/* Ações Condicionais */}
+                  {/* Prioridade 3: Ações e Detalhes */}
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onSelectRental(rental)}
+                        title="Ver detalhes e editar"
+                        className="text-gray-700 hover:bg-gray-100 border-gray-200"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </Button>
+
                       {isActive ? (
                         <Button
                           variant="outline"
@@ -119,7 +166,7 @@ export function RentalTable({
                           size="sm"
                           onClick={() => onReactivateRental(rental.id)}
                           className="text-amber-700 hover:bg-amber-50 border-amber-200 gap-1"
-                          title="Reabrir contrato finalizado"
+                          title="Reabrir contrato"
                         >
                           <RotateCcw className="w-3.5 h-3.5" /> Reabrir
                         </Button>
