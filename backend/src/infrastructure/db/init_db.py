@@ -3,7 +3,7 @@
 from sqlmodel import SQLModel
 from src.infrastructure.db.session import engine
 # Importar os modelos garante que o SQLModel os registre
-from src.infrastructure.db.models import MaterialTable, ClientTable, RentalTable
+from src.infrastructure.db.models import MaterialTable, ClientTable, RentalTable, RentalAuditLogTable
 
 
 def init_db():
