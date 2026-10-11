@@ -1,7 +1,7 @@
 // frontend/src/features/rentals/components/RentalFormModal.tsx
 
-import { useState } from 'react';
-import { X, FilePlus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, FilePlus, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useClients } from '@/features/clients/hooks/useClients';
@@ -28,6 +28,26 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
   const clients = Array.isArray(clientsData) ? clientsData : clientsData?.items || [];
   const materials = Array.isArray(materialsData) ? materialsData : materialsData?.items || [];
 
+  // Encontra o material selecionado para obter o preço base de tabela
+  const selectedMaterial = materials.find((m) => m.id === materialId);
+  const baseDailyRate = selectedMaterial ? Number(selectedMaterial.daily_rate) : 0;
+
+  // Quando o material muda, inicializamos o campo com o valor padrão de tabela
+  useEffect(() => {
+    if (selectedMaterial) {
+      setCustomDailyRate(String(selectedMaterial.daily_rate));
+    } else {
+      setCustomDailyRate('');
+    }
+  }, [materialId, selectedMaterial]);
+
+  // Verificamos se há desconto (se o valor digitado for menor que a tabela)
+  const numericCustomRate = parseFloat(customDailyRate) || 0;
+  const isDiscounted = numericCustomRate > 0 && numericCustomRate < baseDailyRate;
+  const discountPercentage = isDiscounted
+    ? Math.round(((baseDailyRate - numericCustomRate) / baseDailyRate) * 100)
+    : 0;
+
   const createRental = useCreateRental();
 
   if (!isOpen) return null;
@@ -42,6 +62,7 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
       end_date: endDate,
       delivery_address: deliveryAddress || undefined,
       notes: notes || undefined,
+      daily_rate: numericCustomRate > 0 ? numericCustomRate : undefined,
     });
 
     onClose();
@@ -93,11 +114,44 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
               <option value="">Selecione um equipamento...</option>
               {materials.map((m) => (
                 <option key={m.id} value={m.id}>
-                  {m.name} (R$ {Number(m.daily_rate).toFixed(2)}/dia)
+                  {m.name} (Tabela: R$ {Number(m.daily_rate).toFixed(2)}/dia)
                 </option>
               ))}
             </select>
           </div>
+
+          {/* Campo de Valor da Diária Editável com Alerta Visual de Desconto */}
+          {materialId && (
+            <div className="bg-gray-50/80 p-4 rounded-xl border border-gray-200/60 space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Valor da Diária (R$) *
+                </label>
+                <span className="text-xs text-gray-500">
+                  Preço de tabela: R$ {baseDailyRate.toFixed(2)}
+                </span>
+              </div>
+
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                required
+                value={customDailyRate}
+                onChange={(e) => setCustomDailyRate(e.target.value)}
+              />
+
+              {/* Alerta Visual Condicional de Desconto */}
+              {isDiscounted && (
+                <div className="flex items-center gap-2 text-xs font-medium text-amber-700 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200/60 animate-fade-in">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+                  <span>
+                    Desconto aplicado: <strong className="font-bold">{discountPercentage}%</strong> abaixo do valor de tabela padrão.
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
