@@ -137,7 +137,11 @@ export interface RentalCreatePayload {
 export interface GetRentalsParams {
   page?: number;
   limit?: number;
+  search?: string;
   status?: RentalStatus;
+  payment_status?: PaymentStatus;
+  start_date_from?: string;
+  start_date_to?: string;
 }
 
 export interface PaymentRegisterPayload {
