@@ -119,6 +119,9 @@ export interface Rental {
   enable_sms_notification: boolean;
   created_at: string;
   updated_at: string;
+  delivery_address: string;
+  notes: string;
+  total_days: number;
 }
 
 export interface RentalCreatePayload {
