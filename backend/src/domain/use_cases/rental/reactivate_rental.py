@@ -19,4 +19,5 @@ class ReactivateRentalUseCase:
             raise DomainException("Esta locação já está ativa.")
 
         rental.reactivate()
+        self.rental_repo.add_audit_log(rental.id, "REATIVADO", f"Contrato reaberto e retornado para ativo.")
         return self.rental_repo.update(rental)
