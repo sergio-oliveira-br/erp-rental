@@ -11,7 +11,8 @@ import {
 } from '../hooks/useRentals';
 import { RentalTable } from './RentalTable';
 import { RentalFormModal } from './RentalFormModal';
-import type { PaymentStatus } from '@/types';
+import type {PaymentStatus, Rental} from '@/types';
+import {RentalDetailsModal} from "@/features/rentals/components/RentalDetailsModal.tsx";
 
 export function RentalsPage() {
   const [page, setPage] = useState(1);
@@ -21,6 +22,7 @@ export function RentalsPage() {
   const finishRental = useFinishRental();
   const reactivateRental = useReactivateRental();
   const updatePaymentStatus = useUpdatePaymentStatus();
+  const [selectedRental, setSelectedRental] = useState<Rental | null>(null);
 
   const handleFinishRental = async (id: string) => {
     if (window.confirm('Confirma o encerramento da locação e devolução do equipamento?')) {
@@ -61,6 +63,7 @@ export function RentalsPage() {
         onFinishRental={handleFinishRental}
         onReactivateRental={handleReactivateRental}
         onTogglePaymentStatus={handleTogglePaymentStatus}
+        onSelectRental={(rental) => setSelectedRental(rental)}
       />
 
       {totalPages > 1 && (
@@ -91,6 +94,7 @@ export function RentalsPage() {
       )}
 
       <RentalFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <RentalDetailsModal rental={selectedRental} isOpen={!!selectedRental} onClose={() => setSelectedRental(null)}/>
     </div>
   );
 }
