@@ -9,9 +9,11 @@ from src.domain.exceptions.domain_exceptions import EntityNotFoundException, Dom
 from src.domain.use_cases.rental.finish_rental import FinishRentalUseCase
 from src.domain.use_cases.rental.list_rentals import ListRentalsUseCase
 from src.domain.use_cases.rental.reactivate_rental import ReactivateRentalUseCase
+from src.domain.use_cases.rental.update_payment_status import UpdatePaymentStatusUseCase
 from src.entrypoints.dependencies import get_create_rental_use_case, get_list_rentals_use_case, \
-    get_finish_rental_use_case, get_reactivate_rental_use_case
-from src.entrypoints.schemas import RentalCreateSchema, RentalResponseSchema, PaginatedResponse
+    get_finish_rental_use_case, get_reactivate_rental_use_case, get_update_payment_status_use_case
+from src.entrypoints.schemas import RentalCreateSchema, RentalResponseSchema, PaginatedResponse, \
+    RentalPaymentUpdateSchema
 from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
 
 router = APIRouter(prefix="/rentals", tags=["Rentals"])
@@ -65,5 +67,13 @@ def finish_rental(rental_id: uuid.UUID, use_case: FinishRentalUseCase = Depends(
 def reactivate_rental(rental_id: uuid.UUID, use_case: ReactivateRentalUseCase = Depends(get_reactivate_rental_use_case), get_reactivate_rental_use_case=None):
     try:
         return use_case.execute(rental_id=rental_id)
+    except (EntityNotFoundException, DomainException) as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.patch("/{rental_id}/payment", response_model=RentalResponseSchema)
+def update_payment_status(rental_id: uuid.UUID, payload: RentalPaymentUpdateSchema, use_case: UpdatePaymentStatusUseCase = Depends(get_update_payment_status_use_case),):
+    try:
+        return use_case.execute(rental_id=rental_id, payment_status=payload.payment_status)
     except (EntityNotFoundException, DomainException) as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
