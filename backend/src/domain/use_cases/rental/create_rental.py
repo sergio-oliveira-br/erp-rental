@@ -1,6 +1,7 @@
 # backend/src/domain/use_cases/create_rental.py
 
 from datetime import date
+from decimal import Decimal
 from typing import Optional
 import uuid
 from src.domain.entities.rental import Rental
@@ -29,7 +30,8 @@ class CreateRentalUseCase:
             end_date: date,
             delivery_address: Optional[str] = None,
             notes: Optional[str] = None,
-            enable_sms_notification: bool = False
+            enable_sms_notification: bool = False,
+            daily_rate: Optional[Decimal] = None
     ) -> Rental:
         # 1. Validar cliente
         client = self.client_repo.get_by_id(client_id)
@@ -47,13 +49,16 @@ class CreateRentalUseCase:
         # 3. Fallback do endereço de entrega
         final_delivery_address = delivery_address if delivery_address else client.address
 
+        # Lógica de preço: Se enviado pelo operador, usa o customizado; senão, usa o padrão do material
+        final_daily_rate = daily_rate if daily_rate is not None else material.daily_rate
+
         # 4. Criar transação
         rental = Rental(
             client_id=client_id,
             material_id=material_id,
             start_date=start_date,
             end_date=end_date,
-            daily_rate=material.daily_rate,
+            daily_rate=final_daily_rate,
             delivery_address=final_delivery_address,
             notes=notes,
             enable_sms_notification=enable_sms_notification
