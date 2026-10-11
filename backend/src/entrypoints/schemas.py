@@ -108,8 +108,14 @@ class RentalResponseSchema(BaseModel):
 class RentalPaymentUpdateSchema(BaseModel):
     payment_status: PaymentStatus
 
-    
+
 class RentalUpdateSchema(BaseModel):
     delivery_address: Optional[str] = None
     notes: Optional[str] = None
     end_date: Optional[date] = None
+
+class RentalAuditLogResponse(BaseModel):
+    id: uuid.UUID
+    action: str
+    description: str
+    created_at: datetime
