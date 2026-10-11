@@ -5,8 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ClientsPage } from '@/features/clients/components/ClientsPage';
 import { ToastProvider } from '@/components/ui/Toaster';
 import { Navbar } from '@/components/layout/Navbar.tsx';
-import {MaterialsPage} from "@/features/materials/components/MaterialsPage.tsx";
-import {RentalsPage} from "@/features/rentals/components/RentalsPage.tsx";
+import { MaterialsPage } from "@/features/materials/components/MaterialsPage.tsx";
+import { RentalsPage } from "@/features/rentals/components/RentalsPage.tsx";
+import { WelcomePage } from "@/features/dashboard/components/WelcomePage.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +20,8 @@ const queryClient = new QueryClient({
 });
 
 export function App() {
-  const [currentTab, setCurrentTab] = useState<'clients' | 'materials' | 'rentals'>('rentals');
+  // Adicionamos 'welcome' como uma opção válida de aba (e podemos definir como padrão inicial se desejar)
+  const [currentTab, setCurrentTab] = useState<'welcome' | 'clients' | 'materials' | 'rentals'>('welcome');
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -29,6 +31,7 @@ export function App() {
         <Navbar currentTab={currentTab} onSelectTab={setCurrentTab} />
 
         <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+          {currentTab === 'welcome' && <WelcomePage onSelectTab={setCurrentTab} />}
           {currentTab === 'clients' && <ClientsPage />}
           {currentTab === 'materials' && <MaterialsPage />}
           {currentTab === 'rentals' && <RentalsPage />}
