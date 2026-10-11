@@ -19,7 +19,7 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [notes, setNotes] = useState('');
+  const [notes] = useState('');
 
   // Busca clientes e materiais ativos para preencher os selects
   const { data: clientsData } = useClients({ is_active: true, limit: 100 });
