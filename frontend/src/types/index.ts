@@ -132,6 +132,7 @@ export interface RentalCreatePayload {
   delivery_address?: string;
   notes?: string;
   enable_sms_notification?: boolean;
+  daily_rate?: number;
 }
 
 export interface GetRentalsParams {
