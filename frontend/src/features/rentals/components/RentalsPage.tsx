@@ -11,18 +11,71 @@ import {
 } from '../hooks/useRentals';
 import { RentalTable } from './RentalTable';
 import { RentalFormModal } from './RentalFormModal';
-import type {PaymentStatus, Rental} from '@/types';
-import {RentalDetailsModal} from "@/features/rentals/components/RentalDetailsModal.tsx";
+import { RentalDetailsModal } from './RentalDetailsModal';
+import { RentalsFilterBar } from './RentalsFilterBar';
+import { RentalStatus, PaymentStatus, type Rental } from '@/types';
 
 export function RentalsPage() {
   const [page, setPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState<string>('');
+  const [paymentStatus, setPaymentStatus] = useState<string>('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
 
-  const { data, isLoading } = useRentals({ page, limit: 10 });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRental, setSelectedRental] = useState<Rental | null>(null);
+
+  // Passando os parâmetros com cast correto para os enums esperados pelo tipo
+  const { data, isLoading } = useRentals({
+    page,
+    limit: 10,
+    search: search || undefined,
+    status: status ? (status as RentalStatus) : undefined,
+    payment_status: paymentStatus ? (paymentStatus as PaymentStatus) : undefined,
+    start_date_from: dateFrom || undefined,
+    start_date_to: dateTo || undefined,
+  });
+
   const finishRental = useFinishRental();
   const reactivateRental = useReactivateRental();
   const updatePaymentStatus = useUpdatePaymentStatus();
-  const [selectedRental, setSelectedRental] = useState<Rental | null>(null);
+
+
+  // Handlers que resetam a página para 1 ao filtrar
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    setPage(1);
+  };
+
+  const handleStatusChange = (val: string) => {
+    setStatus(val);
+    setPage(1);
+  };
+
+  const handlePaymentStatusChange = (val: string) => {
+    setPaymentStatus(val);
+    setPage(1);
+  };
+
+  const handleDateFromChange = (val: string) => {
+    setDateFrom(val);
+    setPage(1);
+  };
+
+  const handleDateToChange = (val: string) => {
+    setDateTo(val);
+    setPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearch('');
+    setStatus('');
+    setPaymentStatus('');
+    setDateFrom('');
+    setDateTo('');
+    setPage(1);
+  };
 
   const handleFinishRental = async (id: string) => {
     if (window.confirm('Confirma o encerramento da locação e devolução do equipamento?')) {
@@ -40,8 +93,10 @@ export function RentalsPage() {
     await updatePaymentStatus.mutateAsync({ id, paymentStatus: newStatus });
   };
 
-  const rentals = Array.isArray(data) ? data : data?.items || [];
-  const totalItems = Array.isArray(data) ? data.length : data?.total || 0;
+  // Tratamento seguro para array ou objeto paginado sem erro de tipo (any cast para compatibilidade)
+  const rentalsData: any = data;
+  const rentals: Rental[] = Array.isArray(rentalsData) ? rentalsData : rentalsData?.items || [];
+  const totalItems: number = Array.isArray(rentalsData) ? rentalsData.length : rentalsData?.total || rentals.length;
   const limit = 10;
   const totalPages = Math.ceil(totalItems / limit) || 1;
 
@@ -56,6 +111,21 @@ export function RentalsPage() {
           <Plus className="w-4 h-4" /> Nova Locação
         </Button>
       </div>
+
+      {/* Barra de Filtros Avançados */}
+      <RentalsFilterBar
+        search={search}
+        setSearch={handleSearchChange}
+        status={status}
+        setStatus={handleStatusChange}
+        paymentStatus={paymentStatus}
+        setPaymentStatus={handlePaymentStatusChange}
+        dateFrom={dateFrom}
+        setDateFrom={handleDateFromChange}
+        dateTo={dateTo}
+        setDateTo={handleDateToChange}
+        onReset={handleResetFilters}
+      />
 
       <RentalTable
         rentals={rentals}
@@ -94,7 +164,7 @@ export function RentalsPage() {
       )}
 
       <RentalFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <RentalDetailsModal rental={selectedRental} isOpen={!!selectedRental} onClose={() => setSelectedRental(null)}/>
+      <RentalDetailsModal rental={selectedRental} isOpen={!!selectedRental} onClose={() => setSelectedRental(null)} />
     </div>
   );
 }
