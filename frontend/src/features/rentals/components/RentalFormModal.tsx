@@ -20,6 +20,19 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
   const [endDate, setEndDate] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [notes] = useState('');
+  const [customDailyRate, setCustomDailyRate] = useState<string>('');
+
+  // Limpa o formulário sempre que o modal for fechado ou reaberto
+  useEffect(() => {
+    if (isOpen) {
+      setClientId('');
+      setMaterialId('');
+      setStartDate(new Date().toISOString().split('T')[0]);
+      setEndDate('');
+      setDeliveryAddress('');
+      setCustomDailyRate('');
+    }
+  }, [isOpen]);
 
   // Busca clientes e materiais ativos para preencher os selects
   const { data: clientsData } = useClients({ is_active: true, limit: 100 });
