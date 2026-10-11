@@ -1,9 +1,10 @@
 # backend/src/infrastructure/db/repositories/postgres_rental_repository.py
 
 from datetime import date, datetime
-from typing import List, Optional
+from typing import List, Optional, Tuple, Any
 import uuid
 from sqlmodel import Session, select
+import sqlalchemy as sa
 
 from src.domain.entities.rental import PaymentStatus, Rental, RentalStatus
 from src.domain.ports.rental_repository import RentalRepositoryPort
@@ -15,7 +16,6 @@ class PostgresRentalRepository(RentalRepositoryPort):
         self.session = session
 
     def _to_entity(self, model: RentalTable) -> Rental:
-
         start_d = model.start_date.date() if isinstance(model.start_date, datetime) else model.start_date
         end_d = model.end_date.date() if isinstance(model.end_date, datetime) else model.end_date
 
@@ -46,9 +46,41 @@ class PostgresRentalRepository(RentalRepositoryPort):
             notes=entity.notes,
             enable_sms_notification=entity.enable_sms_notification,
             status=entity.status.value if isinstance(entity.status, RentalStatus) else str(entity.status),
-            payment_status=entity.payment_status.value if isinstance(entity.payment_status, PaymentStatus) else str(entity.payment_status),
+            payment_status=entity.payment_status.value if isinstance(entity.payment_status, PaymentStatus) else str(
+                entity.payment_status),
             created_at=entity.created_at,
         )
+
+    # Responsabilidade Única: Mapear uma linha de resultado do JOIN para a Entidade com nomes
+    def _map_rental_row(self, row: Tuple[RentalTable, str, str]) -> Rental:
+        model, client_name, material_name = row
+        entity = self._to_entity(model)
+        entity.client_name = client_name
+        entity.material_name = material_name
+        return entity
+
+    # Aplicar filtros dinâmicos à query (essencial para volumetria alta)
+    def _apply_rental_filters(self, statement: Any, search: Optional[str] = None,
+                              status: Optional[str] = None, payment_status: Optional[str] = None,
+                              start_date_from: Optional[date] = None, start_date_to: Optional[date] = None,) -> Any:
+        if search:
+            search_term = f"%{search}%"
+            statement = statement.where(
+                sa.or_(ClientTable.name.ilike(search_term),MaterialTable.name.ilike(search_term)))
+
+        if status:
+            statement = statement.where(RentalTable.status == status)
+
+        if payment_status:
+            statement = statement.where(RentalTable.payment_status == payment_status)
+
+        if start_date_from:
+            statement = statement.where(RentalTable.start_date >= start_date_from)
+
+        if start_date_to:
+            statement = statement.where(RentalTable.start_date <= start_date_to)
+
+        return statement
 
     def save(self, rental: Rental) -> Rental:
         model = self._to_model(rental)
@@ -58,24 +90,16 @@ class PostgresRentalRepository(RentalRepositoryPort):
         return self._to_entity(model)
 
     def get_by_id(self, rental_id: uuid.UUID) -> Optional[Rental]:
-        statement = (
-            select(RentalTable, ClientTable.name, MaterialTable.name)
-            .join(ClientTable, RentalTable.client_id == ClientTable.id)
-            .join(MaterialTable, RentalTable.material_id == MaterialTable.id)
-            .where(RentalTable.id == rental_id)
-        )
+        statement = (select(RentalTable, ClientTable.name, MaterialTable.name)
+                     .join(ClientTable, RentalTable.client_id == ClientTable.id)
+                     .join(MaterialTable, RentalTable.material_id == MaterialTable.id)
+                     .where(RentalTable.id == rental_id))
         result = self.session.exec(statement).first()
         if not result:
             return None
-
-        model, client_name, material_name = result
-        entity = self._to_entity(model)
-        entity.client_name = client_name
-        entity.material_name = material_name
-        return entity
+        return self._map_rental_row(result)
 
     def list_all(self, status: Optional[RentalStatus] = None) -> List[Rental]:
-        # Consulta com JOIN nas tabelas de clientes e materiais
         statement = (
             select(RentalTable, ClientTable.name, MaterialTable.name)
             .join(ClientTable, RentalTable.client_id == ClientTable.id)
@@ -84,15 +108,29 @@ class PostgresRentalRepository(RentalRepositoryPort):
         if status:
             statement = statement.where(RentalTable.status == status.value)
         results = self.session.exec(statement).all()
+        return [self._map_rental_row(row) for row in results]
 
-        rentals = []
-        for model, client_name, material_name in results:
-            entity = self._to_entity(model)
-            entity.client_name = client_name
-            entity.material_name = material_name
-            rentals.append(entity)
+    # metodo para alta volumetria com filtros e paginação
+    def get_filtered_rentals(self, page: int = 1, limit: int = 10, search: Optional[str] = None,
+                             status: Optional[str] = None, payment_status: Optional[str] = None,
+                             start_date_from: Optional[date] = None, start_date_to: Optional[date] = None,) -> List[Rental]:
 
-        return rentals
+        statement = (select(RentalTable, ClientTable.name, MaterialTable.name)
+                     .join(ClientTable, RentalTable.client_id == ClientTable.id)
+                     .join(MaterialTable, RentalTable.material_id == MaterialTable.id))
+
+        # Delega a aplicação dos filtros para metodo especializado
+        statement = self._apply_rental_filters(statement, search, status, payment_status, start_date_from, start_date_to)
+
+        # Ordenação por data de criação decrescente (mais recentes primeiro)
+        statement = statement.order_by(RentalTable.created_at.desc())
+
+        # Paginação otimizada para banco de dados grande (> 1000 registros)
+        offset = (page - 1) * limit
+        statement = statement.offset(offset).limit(limit)
+
+        results = self.session.exec(statement).all()
+        return [self._map_rental_row(row) for row in results]
 
     def list_by_client(self, client_id: uuid.UUID) -> List[Rental]:
         statement = select(RentalTable).where(RentalTable.client_id == client_id)
