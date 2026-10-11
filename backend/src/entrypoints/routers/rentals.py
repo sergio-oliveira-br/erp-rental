@@ -1,6 +1,6 @@
 # backend/src/entrypoints/routers/rentals.py
 import uuid
-from typing import Optional
+from typing import Optional, List
 
 from fastapi import APIRouter, Depends, status, HTTPException, Query
 
@@ -13,10 +13,11 @@ from src.domain.use_cases.rental.update_payment_status import UpdatePaymentStatu
 from src.domain.use_cases.rental.update_rental import UpdateRentalUseCase
 from src.entrypoints.dependencies import get_create_rental_use_case, get_list_rentals_use_case, \
     get_finish_rental_use_case, get_reactivate_rental_use_case, get_update_payment_status_use_case, \
-    get_update_rental_use_case
+    get_update_rental_use_case, get_rental_repository
 from src.entrypoints.schemas import RentalCreateSchema, RentalResponseSchema, PaginatedResponse, \
-    RentalPaymentUpdateSchema, RentalUpdateSchema
+    RentalPaymentUpdateSchema, RentalUpdateSchema, RentalAuditLogResponse
 from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
+from src.infrastructure.db.repositories.postgres_rental_repository import PostgresRentalRepository
 
 router = APIRouter(prefix="/rentals", tags=["Rentals"])
 
@@ -92,3 +93,7 @@ def update_rental(rental_id: uuid.UUID, payload: RentalUpdateSchema,
         )
     except (EntityNotFoundException, DomainException) as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+@router.get("/{rental_id}/logs", response_model=List[RentalAuditLogResponse])
+def get_rental_logs(rental_id: uuid.UUID, repo: PostgresRentalRepository = Depends(get_rental_repository)):
+    return repo.get_audit_logs(rental_id)
