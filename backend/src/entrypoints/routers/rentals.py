@@ -10,10 +10,12 @@ from src.domain.use_cases.rental.finish_rental import FinishRentalUseCase
 from src.domain.use_cases.rental.list_rentals import ListRentalsUseCase
 from src.domain.use_cases.rental.reactivate_rental import ReactivateRentalUseCase
 from src.domain.use_cases.rental.update_payment_status import UpdatePaymentStatusUseCase
+from src.domain.use_cases.rental.update_rental import UpdateRentalUseCase
 from src.entrypoints.dependencies import get_create_rental_use_case, get_list_rentals_use_case, \
-    get_finish_rental_use_case, get_reactivate_rental_use_case, get_update_payment_status_use_case
+    get_finish_rental_use_case, get_reactivate_rental_use_case, get_update_payment_status_use_case, \
+    get_update_rental_use_case
 from src.entrypoints.schemas import RentalCreateSchema, RentalResponseSchema, PaginatedResponse, \
-    RentalPaymentUpdateSchema
+    RentalPaymentUpdateSchema, RentalUpdateSchema
 from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
 
 router = APIRouter(prefix="/rentals", tags=["Rentals"])
@@ -75,5 +77,18 @@ def reactivate_rental(rental_id: uuid.UUID, use_case: ReactivateRentalUseCase = 
 def update_payment_status(rental_id: uuid.UUID, payload: RentalPaymentUpdateSchema, use_case: UpdatePaymentStatusUseCase = Depends(get_update_payment_status_use_case),):
     try:
         return use_case.execute(rental_id=rental_id, payment_status=payload.payment_status)
+    except (EntityNotFoundException, DomainException) as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+@router.patch("/{rental_id}", response_model=RentalResponseSchema)
+def update_rental(rental_id: uuid.UUID, payload: RentalUpdateSchema,
+                  use_case: UpdateRentalUseCase = Depends(get_update_rental_use_case),):
+    try:
+        return use_case.execute(
+            rental_id=rental_id,
+            delivery_address=payload.delivery_address,
+            notes=payload.notes,
+            end_date=payload.end_date,
+        )
     except (EntityNotFoundException, DomainException) as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
