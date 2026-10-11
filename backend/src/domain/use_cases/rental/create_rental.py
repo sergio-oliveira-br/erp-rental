@@ -60,6 +60,7 @@ class CreateRentalUseCase:
         )
 
         saved_rental = self.rental_repo.save(rental)
+        self.rental_repo.add_audit_log(saved_rental.id, "CRIADO", f"Contrato de locação criado para o material.")
         # Não irei definir availability neste momento
         # material.set_availability(False)
         # self.material_repo.update(material)
