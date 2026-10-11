@@ -15,6 +15,7 @@ from src.domain.use_cases.client.delete_client import DeleteClientUseCase
 from src.domain.use_cases.client.list_clients import ListClientsUseCase
 from src.domain.use_cases.client.update_client import UpdateClientUseCase
 from src.domain.use_cases.rental.finish_rental import FinishRentalUseCase
+from src.domain.use_cases.rental.list_filtered_rentals import ListFilteredRentalsUseCase
 from src.domain.use_cases.rental.list_rentals import ListRentalsUseCase
 from src.domain.use_cases.rental.reactivate_rental import ReactivateRentalUseCase
 from src.domain.use_cases.rental.update_payment_status import UpdatePaymentStatusUseCase
@@ -90,3 +91,6 @@ def get_update_payment_status_use_case(rental_repo: PostgresRentalRepository = D
 
 def get_update_rental_use_case(rental_repo: PostgresRentalRepository = Depends(get_rental_repository),) -> UpdateRentalUseCase:
     return UpdateRentalUseCase(rental_repo=rental_repo)
+
+def get_list_filtered_rentals_use_case(rental_repo: PostgresRentalRepository = Depends(get_rental_repository),) -> ListFilteredRentalsUseCase:
+    return ListFilteredRentalsUseCase(rental_repo=rental_repo)
