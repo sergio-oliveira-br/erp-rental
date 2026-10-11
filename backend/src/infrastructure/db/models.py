@@ -45,3 +45,13 @@ class RentalTable(SQLModel, table=True):
     status: str = Field(default="ACTIVE")
     payment_status: str = Field(default="PENDING")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class RentalAuditLogTable(SQLModel, table=True):
+    __tablename__ = "rental_audit_logs"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    rental_id: uuid.UUID = Field(foreign_key="rentals.id", index=True)
+    action: str = Field(index=True)  # Ex: CREATED, PAYMENT_UPDATED, FINISHED, REACTIVATED, UPDATED
+    description: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
