@@ -8,6 +8,7 @@ import { Navbar } from '@/components/layout/Navbar.tsx';
 import { MaterialsPage } from "@/features/materials/components/MaterialsPage.tsx";
 import { RentalsPage } from "@/features/rentals/components/RentalsPage.tsx";
 import { WelcomePage } from "@/features/dashboard/components/WelcomePage.tsx";
+import { AnalyticsPage } from "@/features/analytics/components/AnalyticsPage.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,7 +22,7 @@ const queryClient = new QueryClient({
 
 export function App() {
   // Adicionamos 'welcome' como uma opção válida de aba (e podemos definir como padrão inicial se desejar)
-  const [currentTab, setCurrentTab] = useState<'welcome' | 'clients' | 'materials' | 'rentals'>('welcome');
+  const [currentTab, setCurrentTab] = useState<'welcome' | 'clients' | 'materials' | 'rentals'| 'analytics'>('welcome');
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -35,6 +36,7 @@ export function App() {
           {currentTab === 'clients' && <ClientsPage />}
           {currentTab === 'materials' && <MaterialsPage />}
           {currentTab === 'rentals' && <RentalsPage />}
+          {currentTab === 'analytics' && <AnalyticsPage />}
         </main>
       </div>
     </QueryClientProvider>
