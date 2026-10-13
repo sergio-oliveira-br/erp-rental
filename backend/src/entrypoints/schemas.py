@@ -123,3 +123,30 @@ class RentalAuditLogResponse(BaseModel):
     action: str
     description: str
     created_at: datetime
+
+
+
+# --- AUTH / USER SCHEMAS ---
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class Verify2FARequest(BaseModel):
+    username: str
+    code: str
+
+class CreateUserRequest(BaseModel):
+    username: str
+    password: str
+    phone_number: str
+    is_admin: bool = False
+
+class UserResponseSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    username: str
+    phone_number: str
+    is_admin: bool
+    is_active: bool
+    created_at: datetime
