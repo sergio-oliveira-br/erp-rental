@@ -1,6 +1,7 @@
 # backend/src/entrypoints/dependencies.py
 
 from fastapi import Depends
+from sqlalchemy import select
 from sqlmodel import Session
 
 from src.domain.use_cases.client.activate_client import ActivateClientUseCase
@@ -24,6 +25,10 @@ from src.infrastructure.db.repositories.postgres_client_repository import Postgr
 from src.infrastructure.db.session import get_session
 from src.infrastructure.db.repositories.postgres_material_repository import PostgresMaterialRepository
 from src.infrastructure.db.repositories.postgres_rental_repository import PostgresRentalRepository
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import HTTPException, status
+from src.domain.entities.users import User
+from src.core.security import decode_access_token
 
 # -----------------
 # Material
@@ -94,3 +99,37 @@ def get_update_rental_use_case(rental_repo: PostgresRentalRepository = Depends(g
 
 def get_list_filtered_rentals_use_case(rental_repo: PostgresRentalRepository = Depends(get_rental_repository),) -> ListFilteredRentalsUseCase:
     return ListFilteredRentalsUseCase(rental_repo=rental_repo)
+
+
+# -----------------
+# Auth / Users
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Credenciais de autenticação inválidas ou expiradas",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    payload = decode_access_token(token)
+    if payload is None:
+        raise credentials_exception
+
+    username: str = payload.get("sub")
+    if username is None:
+        raise credentials_exception
+
+    user = session.exec(select(User).where(User.username == username)).first()
+    if user is None or not user.is_active:
+        raise credentials_exception
+
+    return user
+
+def get_current_admin_user(current_user: User = Depends(get_current_user)) -> User:
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso negado. Apenas administradores possuem privilégio para esta operação."
+        )
+    return current_user
