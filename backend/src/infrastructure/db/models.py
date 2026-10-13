@@ -55,3 +55,15 @@ class RentalAuditLogTable(SQLModel, table=True):
     action: str = Field(index=True)  # Ex: CREATED, PAYMENT_UPDATED, FINISHED, REACTIVATED, UPDATED
     description: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class UserTable(SQLModel, table=True):
+    __tablename__ = "users"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    username: str = Field(index=True, unique=True)
+    hashed_password: str
+    phone_number: str = Field(index=True)
+    is_admin: bool = Field(default=False)
+    is_active: bool = Field(default=True)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
