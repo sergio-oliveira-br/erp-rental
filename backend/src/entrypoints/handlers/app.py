@@ -5,12 +5,13 @@ from fastapi.responses import JSONResponse
 from mangum import Mangum
 from aws_lambda_powertools import Logger
 
+from src.domain.entities import users
 from src.domain.exceptions.domain_exceptions import (
     EntityNotFoundException,
     BusinessRuleException,
     DomainException,
 )
-from src.entrypoints.routers import clients, materials, rentals
+from src.entrypoints.routers import clients, materials, rentals, auth
 
 logger = Logger(service="erp-rental-api")
 
@@ -50,6 +51,7 @@ async def generic_domain_handler(request: Request, exc: DomainException):
 app.include_router(clients.router)
 app.include_router(materials.router)
 app.include_router(rentals.router)
+app.include_router(auth.router)
 
 # --- ENDPOINTS ---
 @app.get("/health", tags=["Health"])
