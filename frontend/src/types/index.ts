@@ -181,3 +181,48 @@ export interface ClientFinancialSummary {
   active_contracts: number;
   pending_balance: number;
 }
+
+
+
+// ==========================================
+// AUTH & USERS
+// ==========================================
+export interface SystemUser {
+  id: string;
+  username: string;
+  phone_number: string;
+  is_admin: boolean;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface LoginPayload {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  requires_2fa: boolean;
+  phone_hint: string;
+  debug_otp_code?: string;
+}
+
+export interface Verify2FAPayload {
+  username: string;
+  code: string;
+}
+
+export interface AuthTokenResponse {
+  access_token: string;
+  token_type: string;
+  is_admin: boolean;
+  username: string;
+}
+
+export interface CreateUserPayload {
+  username: string;
+  password: string;
+  phone_number: string;
+  is_admin: boolean;
+}
