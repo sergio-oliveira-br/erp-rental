@@ -4,9 +4,18 @@ import os
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from dotenv import load_dotenv
 
-# Carrega do arquivo .env ou usa uma chave padrão aleatória apenas para fallback de testes locais
+# Carrega as variáveis do .env
+load_dotenv()
+
+# Pega a chave do ambiente
 SECRET_KEY = os.getenv("SECRET_KEY")
+
+# Validação de segurança: Falha imediatamente se a chave não estiver configurada
+if not SECRET_KEY:
+    raise ValueError("CRITICAL ERROR: A variável de ambiente 'SECRET_KEY' não está definida no arquivo .env!")
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
 
