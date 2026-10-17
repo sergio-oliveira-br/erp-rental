@@ -96,7 +96,7 @@ export function MaterialsPage() {
 
         <div className="flex items-center gap-3">
           <Button
-            variant={showInactives ? 'default' : 'outline'}
+            variant={showInactives ? 'primary' : 'outline'}
             onClick={() => {
               setShowInactives(!showInactives);
               setPage(1);
