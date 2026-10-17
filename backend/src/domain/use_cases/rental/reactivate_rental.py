@@ -10,8 +10,9 @@ class ReactivateRentalUseCase:
     def __init__(self, rental_repo: RentalRepositoryPort):
         self.rental_repo = rental_repo
 
-    def execute(self, rental_id: uuid.UUID) -> Rental:
-        rental = self.rental_repo.get_by_id(rental_id)
+    def execute(self, rental_id: uuid.UUID, owner_id: uuid.UUID) -> Rental:
+        # Busca a locação validando o ID e o Tenant simultaneamente
+        rental = self.rental_repo.get_by_id(rental_id, owner_id=owner_id)
         if not rental:
             raise EntityNotFoundException("Locação não encontrada.")
 
@@ -19,5 +20,8 @@ class ReactivateRentalUseCase:
             raise DomainException("Esta locação já está ativa.")
 
         rental.reactivate()
-        self.rental_repo.add_audit_log(rental.id, "REATIVADO", f"Contrato reaberto e retornado para ativo.")
+
+        if hasattr(self.rental_repo, "add_audit_log"):
+            self.rental_repo.add_audit_log(rental.id, "REATIVADO", "Contrato reaberto e retornado para ativo.")
+
         return self.rental_repo.update(rental)
