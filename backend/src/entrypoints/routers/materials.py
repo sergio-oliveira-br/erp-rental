@@ -1,31 +1,44 @@
 # backend/src/entrypoints/routers/materials.py
+
 import uuid
 
 from fastapi import APIRouter, Depends, status, HTTPException, Query
 
-from src.domain.exceptions.domain_exceptions import EntityNotFoundException
+from src.domain.exceptions.domain_exceptions import EntityNotFoundException, BusinessRuleException
 from src.domain.use_cases.material.activate_material import ActivateMaterialUseCase
 from src.domain.use_cases.material.delete_material import DeleteMaterialUseCase
 from src.domain.use_cases.material.list_materials import ListMaterialsUseCase
 from src.domain.use_cases.material.update_material import UpdateMaterialUseCase
-from src.entrypoints.dependencies import get_create_material_use_case, get_update_material_use_case, \
-    get_delete_material_use_case, get_activate_material_use_case, get_list_materials_use_case
+from src.entrypoints.dependencies import (
+    get_create_material_use_case,
+    get_update_material_use_case,
+    get_delete_material_use_case,
+    get_activate_material_use_case,
+    get_list_materials_use_case,
+    get_current_user
+)
 from src.entrypoints.schemas import MaterialCreateSchema, MaterialResponseSchema, MaterialUpdateSchema, \
     PaginatedResponse
 from src.domain.use_cases.material.create_material import CreateMaterialUseCase
+from src.infrastructure.db.models import UserTable
 
 router = APIRouter(prefix="/materials", tags=["Materials"])
 
 @router.post("/", response_model=MaterialResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_material(
     payload: MaterialCreateSchema,
-    use_case: CreateMaterialUseCase = Depends(get_create_material_use_case)
+    use_case: CreateMaterialUseCase = Depends(get_create_material_use_case),
+    current_user: UserTable = Depends(get_current_user)  # <-- Identifica o tenant logado
 ):
-    return use_case.execute(
-        name=payload.name,
-        daily_rate=payload.daily_rate,
-        description=payload.description
-    )
+    try:
+        return use_case.execute(
+            name=payload.name,
+            daily_rate=payload.daily_rate,
+            description=payload.description,
+            owner_id=current_user.owner_id  # <-- Associa ao tenant (real ou demo)
+        )
+    except BusinessRuleException as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.get("/", response_model=PaginatedResponse[MaterialResponseSchema])
 def list_materials(
@@ -34,8 +47,10 @@ def list_materials(
     search: str = Query("", description="Busca por nome ou descrição"),
     is_active: bool = Query(True, description="Filtra por materiais ativos (True) ou inativados (False)"),
     use_case: ListMaterialsUseCase = Depends(get_list_materials_use_case),
+    current_user: UserTable = Depends(get_current_user)  # <-- Extrai o owner_id da sessão
 ):
-    materials = use_case.execute(is_active=is_active)
+    # Passa o owner_id para listar estritamente os materiais do tenant
+    materials = use_case.execute(owner_id=current_user.owner_id, is_active=is_active)
 
     if search:
         search_lower = search.lower()
@@ -60,10 +75,12 @@ def update_material(
     material_id: uuid.UUID,
     payload: MaterialUpdateSchema,
     use_case: UpdateMaterialUseCase = Depends(get_update_material_use_case),
+    current_user: UserTable = Depends(get_current_user)
 ):
     try:
         return use_case.execute(
             material_id=material_id,
+            owner_id=current_user.owner_id,  # <-- Garante que pertence ao tenant
             name=payload.name,
             daily_rate=payload.daily_rate,
             description=payload.description,
@@ -71,14 +88,17 @@ def update_material(
         )
     except EntityNotFoundException as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except BusinessRuleException as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.delete("/{material_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_material(
     material_id: uuid.UUID,
     use_case: DeleteMaterialUseCase = Depends(get_delete_material_use_case),
+    current_user: UserTable = Depends(get_current_user)
 ):
     try:
-        use_case.execute(material_id=material_id)
+        use_case.execute(material_id=material_id, owner_id=current_user.owner_id)
         return None
     except EntityNotFoundException as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -87,8 +107,9 @@ def delete_material(
 def activate_material(
     material_id: uuid.UUID,
     use_case: ActivateMaterialUseCase = Depends(get_activate_material_use_case),
+    current_user: UserTable = Depends(get_current_user)
 ):
     try:
-        return use_case.execute(material_id=material_id)
+        return use_case.execute(material_id=material_id, owner_id=current_user.owner_id)
     except EntityNotFoundException as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
