@@ -52,8 +52,8 @@ export function useCreateUser() {
       });
     },
     onError: (error: any) => {
-      const detail = error.response?.data?.detail || 'Erro ao cadastrar usuário.';
-      toast.error(detail);
+      // Utiliza diretamente a mensagem tratada pelo interceptor do apiClient
+      toast.error(error.message || 'Erro ao cadastrar usuário.');
     },
   });
 }
