@@ -1,13 +1,15 @@
 // frontend/src/components/layout/NavbarNav.tsx
 
-import { Users, Package, LayoutDashboard, BarChart3, LogOut, NotepadText } from 'lucide-react';
+import { Users, Package, LayoutDashboard, BarChart3, LogOut, NotepadText, UserPlus } from 'lucide-react';
 
-export type TabType = 'welcome' | 'clients' | 'materials' | 'rentals' | 'analytics';
+// 1. Adicionado 'users' às opções válidas de abas
+export type TabType = 'welcome' | 'clients' | 'materials' | 'rentals' | 'analytics' | 'users';
 
 export interface NavItem {
   id: TabType;
   label: string;
   icon: typeof LayoutDashboard;
+  adminOnly?: boolean; // Flag para identificar rotas exclusivas de admin
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -16,6 +18,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'materials', label: 'Materiais', icon: Package },
   { id: 'rentals', label: 'Locação', icon: NotepadText },
   { id: 'analytics', label: 'Dashboard', icon: BarChart3 },
+  { id: 'users', label: 'Usuários', icon: UserPlus, adminOnly: true }, // Nova aba exclusiva para Admin
 ];
 
 interface NavbarNavProps {
@@ -27,10 +30,18 @@ interface NavbarNavProps {
 }
 
 export function NavbarNav({ currentTab, onSelectTab, variant, user, onLogout }: NavbarNavProps) {
+  // Filtra os itens da navbar: se o item for adminOnly, só exibe se o usuário for admin
+  const filteredNavItems = NAV_ITEMS.filter((item) => {
+    if (item.adminOnly) {
+      return user?.is_admin === true;
+    }
+    return true;
+  });
+
   if (variant === 'desktop') {
     return (
       <nav className="hidden md:flex items-center gap-1 bg-gray-100/80 p-1 rounded-xl border border-gray-200/60">
-        {NAV_ITEMS.map((item) => {
+        {filteredNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
           return (
@@ -56,7 +67,7 @@ export function NavbarNav({ currentTab, onSelectTab, variant, user, onLogout }: 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-gray-200 px-4 py-2">
       <div className="flex justify-around items-center max-w-md mx-auto">
-        {NAV_ITEMS.map((item) => {
+        {filteredNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
           return (
