@@ -18,10 +18,10 @@ export const apiClient: AxiosInstance = axios.create({
   timeout: 10000,
 });
 
-// Interceptor de Requisição (Anexa token JWT do Cognito se existir)
+// Interceptor de Requisição (Anexa o token JWT usando a chave correta: erp_access_token)
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('erp_access_token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -44,7 +44,9 @@ apiClient.interceptors.response.use(
 
       if (status === 401) {
         apiError.message = 'Sessão expirada. Faça login novamente.';
-        localStorage.removeItem('access_token');
+        // Limpa os dados corretos da sessão no localStorage ao expirar
+        localStorage.removeItem('erp_access_token');
+        localStorage.removeItem('erp_user');
       } else if (status === 403) {
         apiError.message = 'Você não tem permissão para realizar esta ação.';
       } else if (status === 404) {
