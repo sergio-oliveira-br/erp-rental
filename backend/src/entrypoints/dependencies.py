@@ -31,12 +31,12 @@ from src.domain.use_cases.rental.update_rental import UpdateRentalUseCase
 from src.infrastructure.db.repositories.postgres_client_repository import PostgresClientRepository
 from src.infrastructure.db.repositories.postgres_material_repository import PostgresMaterialRepository
 from src.infrastructure.db.repositories.postgres_rental_repository import PostgresRentalRepository
-from src.infrastructure.db.models import UserTable  # <-- Importamos a tabela do model
+from src.infrastructure.db.models import UserTable
 from src.infrastructure.db.session import get_session
 from src.core.security import decode_access_token
 
 # -----------------
-# Material (Retornando a Porta / Interface abstrata)
+# Material
 def get_material_repository(session: Session = Depends(get_session)) -> MaterialRepositoryPort:
     return PostgresMaterialRepository(session=session)
 
@@ -57,7 +57,7 @@ def get_activate_material_use_case(material_repo: MaterialRepositoryPort = Depen
 
 
 # -----------------
-# Client (Retornando a Porta / Interface abstrata)
+# Client
 def get_client_repository(session: Session = Depends(get_session)) -> ClientRepositoryPort:
     return PostgresClientRepository(session=session)
 
@@ -82,9 +82,11 @@ def get_activate_client_use_case(client_repo: ClientRepositoryPort = Depends(get
 def get_rental_repository(session: Session = Depends(get_session)) -> RentalRepositoryPort:
     return PostgresRentalRepository(session=session)
 
-def get_create_rental_use_case(rental_repo: RentalRepositoryPort = Depends(get_rental_repository),
-                               client_repo: ClientRepositoryPort = Depends(get_client_repository),
-                               material_repo: MaterialRepositoryPort = Depends(get_material_repository)) -> CreateRentalUseCase:
+def get_create_rental_use_case(
+    rental_repo: RentalRepositoryPort = Depends(get_rental_repository),
+    client_repo: ClientRepositoryPort = Depends(get_client_repository),
+    material_repo: MaterialRepositoryPort = Depends(get_material_repository)
+) -> CreateRentalUseCase:
     return CreateRentalUseCase(rental_repo=rental_repo, client_repo=client_repo, material_repo=material_repo)
 
 def get_list_rentals_use_case(rental_repo: RentalRepositoryPort = Depends(get_rental_repository)) -> ListRentalsUseCase:
@@ -125,7 +127,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Dep
     if username is None:
         raise credentials_exception
 
-    # Consultamos UserTable para garantir o acesso direto ao campo owner_id na sessão
     user = session.exec(select(UserTable).where(UserTable.username == username)).first()
     if user is None or not user.is_active:
         raise credentials_exception
