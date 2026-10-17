@@ -10,6 +10,7 @@ import { apiClient } from '@/api/client';
 import { toast } from 'sonner';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { rentalKeys } from '../utils/rentalKeys';
+import { RentalLifecycleActions } from './RentalLifecycleActions';
 
 interface RentalDetailsModalProps {
   rental: Rental | null;
@@ -88,7 +89,9 @@ export function RentalDetailsModal({ rental, isOpen, onClose }: RentalDetailsMod
   };
 
   const isPaid = rental.payment_status === PaymentStatus.PAID;
-  const isActive = (rental.rental_status || (rental as any).status) === RentalStatus.ACTIVE;
+  const currentStatus = rental.rental_status;
+  const isActive = currentStatus === RentalStatus.ACTIVE;
+  const isCancelled = currentStatus === RentalStatus.CANCELLED;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
@@ -143,6 +146,8 @@ export function RentalDetailsModal({ rental, isOpen, onClose }: RentalDetailsMod
               <div className="flex items-center gap-3">
                 {isActive ? (
                   <Badge variant="success">Contrato Ativo</Badge>
+                ) : isCancelled ? (
+                  <Badge variant="danger">Contrato Cancelado</Badge>
                 ) : (
                   <Badge variant="gray">Contrato Finalizado</Badge>
                 )}
@@ -272,6 +277,17 @@ export function RentalDetailsModal({ rental, isOpen, onClose }: RentalDetailsMod
                     </p>
                   )}
                 </div>
+
+                {/* Componente Modular de Gerenciamento de Status (Visível apenas no modo de edição) */}
+                {isEditing && (
+                  <RentalLifecycleActions
+                    rental={rental}
+                    onSuccess={() => {
+                      setIsEditing(false);
+                      onClose();
+                    }}
+                  />
+                )}
 
                 {isEditing && (
                   <div className="flex items-center justify-end gap-2 pt-2">
