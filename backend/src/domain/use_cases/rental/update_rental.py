@@ -11,9 +11,16 @@ class UpdateRentalUseCase:
     def __init__(self, rental_repo: RentalRepositoryPort):
         self.rental_repo = rental_repo
 
-    def execute(self, rental_id: uuid.UUID, delivery_address: Optional[str] = None,
-                notes: Optional[str] = None, end_date: Optional[date] = None,) -> Rental:
-        rental = self.rental_repo.get_by_id(rental_id)
+    def execute(
+        self,
+        rental_id: uuid.UUID,
+        owner_id: uuid.UUID,
+        delivery_address: Optional[str] = None,
+        notes: Optional[str] = None,
+        end_date: Optional[date] = None,
+    ) -> Rental:
+        # Busca a locação validando o ID e o Tenant simultaneamente
+        rental = self.rental_repo.get_by_id(rental_id, owner_id=owner_id)
         if not rental:
             raise EntityNotFoundException("Locação não encontrada.")
 
@@ -26,6 +33,7 @@ class UpdateRentalUseCase:
                 raise DomainException("A data final não pode ser anterior à data inicial.")
             rental.end_date = end_date
 
-        self.rental_repo.add_audit_log(rental.id, "ATUALIZADO", "Dados operacionais (endereço/notas/prazo) atualizados.")
+        if hasattr(self.rental_repo, "add_audit_log"):
+            self.rental_repo.add_audit_log(rental.id, "ATUALIZADO", "Dados operacionais (endereço/notas/prazo) atualizados.")
 
         return self.rental_repo.update(rental)
