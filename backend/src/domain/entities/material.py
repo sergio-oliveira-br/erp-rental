@@ -10,6 +10,7 @@ import uuid
 class Material:
     name: str
     daily_rate: Decimal
+    owner_id: uuid.UUID
     description: Optional[str] = None
     id: uuid.UUID = field(default_factory=uuid.uuid4)
     is_available: bool = True
