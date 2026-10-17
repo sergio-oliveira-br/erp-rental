@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import uuid
 from src.domain.entities.rental import Rental, RentalStatus
 
@@ -36,4 +36,29 @@ class RentalRepositoryPort(ABC):
     @abstractmethod
     def list_all(self, owner_id: uuid.UUID, status: Optional[RentalStatus] = None) -> List[Rental]:
         """Lista todas as locações do tenant, opcionalmente filtrando por status."""
+        pass
+
+    @abstractmethod
+    def get_filtered_rentals(
+        self,
+        owner_id: uuid.UUID,
+        page: int = 1,
+        limit: int = 10,
+        search: Optional[str] = None,
+        status: Optional[str] = None,
+        payment_status: Optional[str] = None,
+        start_date_from: Optional[date] = None,
+        start_date_to: Optional[date] = None,
+    ) -> List[Rental]:
+        """Lista locações com suporte a filtros dinâmicos e paginação para alta volumetria, isoladas por owner_id."""
+        pass
+
+    @abstractmethod
+    def add_audit_log(self, rental_id: uuid.UUID, action: str, description: str) -> None:
+        """Registra uma entrada no histórico de auditoria do contrato de locação."""
+        pass
+
+    @abstractmethod
+    def get_audit_logs(self, rental_id: uuid.UUID) -> List[Dict[str, Any]]:
+        """Recupera o histórico de auditoria de um contrato de locação."""
         pass
