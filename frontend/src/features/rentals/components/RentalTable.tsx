@@ -1,6 +1,6 @@
 // frontend/src/features/rentals/components/RentalTable.tsx
 
-import { CheckCircle, Clock, RotateCcw, DollarSign, MapPin, FileText, Eye } from 'lucide-react';
+import { CheckCircle, Clock, RotateCcw, DollarSign, MapPin, FileText, Eye, Ban } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { RentalStatus, PaymentStatus, type Rental } from '@/types';
@@ -56,17 +56,26 @@ export function RentalTable({
           <tbody className="divide-y divide-gray-200 text-sm">
             {rentals.map((rental) => {
               const isPaid = rental.payment_status === PaymentStatus.PAID;
-              const isActive = (rental.rental_status || (rental as any).status) === RentalStatus.ACTIVE;
+              const currentStatus = rental.rental_status;
+              const isActive = currentStatus === RentalStatus.ACTIVE;
+              const isCancelled = currentStatus === RentalStatus.CANCELLED;
               const hasAddress = Boolean(rental.delivery_address);
               const hasNotes = Boolean(rental.notes);
 
               return (
-                <tr key={rental.id} className="hover:bg-gray-50/80 transition-colors group">
+                <tr
+                  key={rental.id}
+                  className={`hover:bg-gray-50/80 transition-colors group ${
+                    isCancelled ? 'bg-gray-50/60 opacity-75' : ''
+                  }`}
+                >
 
                   {/* Prioridade 1: Cliente, Material + Prioridade 2: Indicadores de Endereço/Notas */}
                   <td className="px-6 py-4">
                     <div className="font-medium text-gray-900 flex items-center gap-2">
-                      {rental.client_name || rental.client_id}
+                      <span className={isCancelled ? 'line-through text-gray-500' : ''}>
+                        {rental.client_name || rental.client_id}
+                      </span>
 
                       {/* Indicadores Visuais Prioridade 2 */}
                       <div className="flex items-center gap-1">
@@ -125,11 +134,15 @@ export function RentalTable({
                     </button>
                   </td>
 
-                  {/* Status do Contrato */}
+                  {/* Status do Contrato (Ativo, Finalizado ou Cancelado) */}
                   <td className="px-6 py-4">
                     {isActive ? (
                       <Badge variant="success" className="gap-1">
                         <Clock className="w-3 h-3" /> Ativo
+                      </Badge>
+                    ) : isCancelled ? (
+                      <Badge variant="danger" className="gap-1">
+                        <Ban className="w-3 h-3" /> Cancelado
                       </Badge>
                     ) : (
                       <Badge variant="gray" className="gap-1">
