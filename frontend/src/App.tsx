@@ -10,6 +10,7 @@ import { RentalsPage } from "@/features/rentals/components/RentalsPage";
 import { WelcomePage } from "@/features/dashboard/components/WelcomePage";
 import { AnalyticsPage } from "@/features/analytics/components/AnalyticsPage";
 import { LoginPage } from "@/features/users/components/LoginPage";
+import {RegisterUserForm} from "@/features/users/components/RegisterUserForm.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,7 +23,7 @@ const queryClient = new QueryClient({
 });
 
 export function App() {
-  const [currentTab, setCurrentTab] = useState<'welcome' | 'clients' | 'materials' | 'rentals' | 'analytics'>('welcome');
+  const [currentTab, setCurrentTab] = useState<'welcome' | 'clients' | 'materials' | 'rentals' | 'analytics' | 'users'>('welcome');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<{ username: string; is_admin: boolean } | null>(null);
 
@@ -80,6 +81,9 @@ export function App() {
             {currentTab === 'materials' && <MaterialsPage />}
             {currentTab === 'rentals' && <RentalsPage />}
             {currentTab === 'analytics' && <AnalyticsPage />}
+
+            {/* Aba restrita apenas para administradores */}
+            {currentTab === 'users' && user?.is_admin && <RegisterUserForm />}
           </main>
         </div>
       )}
