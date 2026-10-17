@@ -23,6 +23,7 @@ class Rental:
     start_date: date
     end_date: date
     daily_rate: Decimal
+    owner_id: uuid.UUID
     delivery_address: Optional[str] = None  # Endereço específico desta locação/obra
     notes: Optional[str] = None             # Observações pontuais (ex: instruções de entrega)
     enable_sms_notification: bool = False
