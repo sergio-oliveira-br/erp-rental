@@ -10,6 +10,7 @@ class Client:
     name: str
     phone: str
     address: str
+    owner_id: uuid.UUID
     id: uuid.UUID = field(default_factory=uuid.uuid4)
     is_active: bool = True
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
