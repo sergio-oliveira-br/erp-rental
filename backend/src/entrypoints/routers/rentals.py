@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, status, HTTPException, Query
 
 from src.domain.entities.rental import RentalStatus
 from src.domain.exceptions.domain_exceptions import EntityNotFoundException, DomainException
+from src.domain.use_cases.rental.cancel_rental import CancelRentalUseCase
 from src.domain.use_cases.rental.finish_rental import FinishRentalUseCase
 from src.domain.use_cases.rental.list_filtered_rentals import ListFilteredRentalsUseCase
 from src.domain.use_cases.rental.list_rentals import ListRentalsUseCase
@@ -23,7 +24,7 @@ from src.entrypoints.dependencies import (
     get_update_rental_use_case,
     get_rental_repository,
     get_list_filtered_rentals_use_case,
-    get_current_user  # <-- Injeta o usuário logado via JWT
+    get_current_user, get_cancel_rental_use_case  # <-- Injeta o usuário logado via JWT
 )
 from src.entrypoints.schemas import (
     RentalCreateSchema,
@@ -163,3 +164,15 @@ def get_rental_logs(
     if not rental:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Locação não encontrada.")
     return repo.get_audit_logs(rental_id)
+
+
+@router.post("/{rental_id}/cancel", response_model=RentalResponseSchema)
+def cancel_rental(
+    rental_id: uuid.UUID,
+    use_case: CancelRentalUseCase = Depends(get_cancel_rental_use_case),
+    current_user: UserTable = Depends(get_current_user)
+):
+    try:
+        return use_case.execute(rental_id=rental_id, owner_id=current_user.owner_id)
+    except (EntityNotFoundException, DomainException) as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
