@@ -11,6 +11,7 @@ class MaterialTable(SQLModel, table=True):
     __tablename__ = "materials"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(index=True)
     name: str = Field(index=True)
     daily_rate: Decimal = Field(max_digits=10, decimal_places=2)
     description: Optional[str] = Field(default=None)
@@ -23,6 +24,7 @@ class ClientTable(SQLModel, table=True):
     __tablename__ = "clients"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(index=True)
     name: str = Field(index=True)
     phone: Optional[str] = Field(default=None)
     address: Optional[str] = Field(default=None)
@@ -34,6 +36,7 @@ class RentalTable(SQLModel, table=True):
     __tablename__ = "rentals"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(index=True)
     client_id: uuid.UUID = Field(foreign_key="clients.id", index=True)
     material_id: uuid.UUID = Field(foreign_key="materials.id", index=True)
     start_date: date = Field()
@@ -61,6 +64,7 @@ class UserTable(SQLModel, table=True):
     __tablename__ = "users"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    owner_id: uuid.UUID = Field(index=True)
     username: str = Field(index=True, unique=True)
     hashed_password: str
     phone_number: str = Field(index=True)
