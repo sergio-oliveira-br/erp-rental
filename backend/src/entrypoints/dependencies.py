@@ -19,6 +19,7 @@ from src.domain.use_cases.material.create_material import CreateMaterialUseCase
 from src.domain.use_cases.material.delete_material import DeleteMaterialUseCase
 from src.domain.use_cases.material.list_materials import ListMaterialsUseCase
 from src.domain.use_cases.material.update_material import UpdateMaterialUseCase
+from src.domain.use_cases.rental.cancel_rental import CancelRentalUseCase
 
 from src.domain.use_cases.rental.create_rental import CreateRentalUseCase
 from src.domain.use_cases.rental.finish_rental import FinishRentalUseCase
@@ -107,6 +108,8 @@ def get_update_rental_use_case(rental_repo: RentalRepositoryPort = Depends(get_r
 def get_list_filtered_rentals_use_case(rental_repo: RentalRepositoryPort = Depends(get_rental_repository)) -> ListFilteredRentalsUseCase:
     return ListFilteredRentalsUseCase(rental_repo=rental_repo)
 
+def get_cancel_rental_use_case(rental_repo: RentalRepositoryPort = Depends(get_rental_repository)) -> CancelRentalUseCase:
+    return CancelRentalUseCase(rental_repo=rental_repo)
 
 # -----------------
 # Auth / Users
