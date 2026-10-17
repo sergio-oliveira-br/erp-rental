@@ -1,6 +1,6 @@
 // frontend/src/components/layout/NavbarNav.tsx
 
-import { Users, Package, LayoutDashboard, BarChart3, LogOut } from 'lucide-react';
+import { Users, Package, LayoutDashboard, BarChart3, LogOut, NotepadText } from 'lucide-react';
 
 export type TabType = 'welcome' | 'clients' | 'materials' | 'rentals' | 'analytics';
 
@@ -14,7 +14,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'welcome', label: 'Início', icon: LayoutDashboard },
   { id: 'clients', label: 'Clientes', icon: Users },
   { id: 'materials', label: 'Materiais', icon: Package },
-  { id: 'rentals', label: 'Locação', icon: Package },
+  { id: 'rentals', label: 'Locação', icon: NotepadText },
   { id: 'analytics', label: 'Dashboard', icon: BarChart3 },
 ];
 
