@@ -20,7 +20,12 @@ export function Navbar({ currentTab, onSelectTab, user, onLogout }: NavbarProps)
         <NavbarBrand />
 
         {/* Navegação Desktop */}
-        <NavbarNav currentTab={currentTab} onSelectTab={onSelectTab} variant="desktop" />
+        <NavbarNav
+          currentTab={currentTab}
+          onSelectTab={onSelectTab}
+          variant="desktop"
+          user={user}
+        />
 
         {/* Perfil e Logout (Desktop) */}
         {user && onLogout && <NavbarUserMenu user={user} onLogout={onLogout} />}
