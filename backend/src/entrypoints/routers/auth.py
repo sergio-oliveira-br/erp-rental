@@ -84,7 +84,8 @@ def register_user(
         username=payload.username,
         hashed_password=get_password_hash(payload.password),
         phone_number=payload.phone_number,
-        is_admin=payload.is_admin
+        is_admin=payload.is_admin,
+        owner_id=current_admin.owner_id
     )
 
     session.add(new_user)
