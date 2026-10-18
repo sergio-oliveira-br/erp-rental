@@ -1,7 +1,8 @@
 # terraform/environments/production/variables.tf
 
 variable "aws_region" {
-  type = string, default = "sa-east-1"
+  type = string
+  default = "sa-east-1"
 }
 
 variable "project_name" {
