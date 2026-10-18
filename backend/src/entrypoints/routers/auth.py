@@ -97,3 +97,26 @@ def register_user(
         "id": str(new_user.id),
         "is_admin": new_user.is_admin
     }
+
+
+
+@router.post("/guest")
+def guest_login(session: Session = Depends(get_session)):
+    """Acesso direto para visitantes/recrutadores explorarem o portfólio sem 2FA."""
+    guest_user = session.exec(select(UserTable).where(UserTable.username == "guest")).first()
+
+    if not guest_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conta de demonstração não configurada no banco de dados."
+        )
+
+    # Emite o token JWT diretamente sem passar por verificação 2FA
+    access_token = create_access_token(data={"sub": guest_user.username})
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "is_admin": guest_user.is_admin,
+        "username": guest_user.username
+    }
