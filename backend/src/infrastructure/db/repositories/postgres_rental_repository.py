@@ -179,3 +179,26 @@ class PostgresRentalRepository(RentalRepositoryPort):
             }
             for log in results
         ]
+
+    def count_filtered_rentals(
+            self,
+            owner_id: uuid.UUID,
+            search: Optional[str] = None,
+            status: Optional[str] = None,
+            payment_status: Optional[str] = None,
+            start_date_from: Optional[date] = None,
+            start_date_to: Optional[date] = None,
+    ) -> int:
+        statement = (
+            select(sa.func.count(RentalTable.id))
+            .select_from(RentalTable)
+            .join(ClientTable, RentalTable.client_id == ClientTable.id)
+            .join(MaterialTable, RentalTable.material_id == MaterialTable.id)
+            .where(RentalTable.owner_id == owner_id)
+        )
+
+        statement = self._apply_rental_filters(
+            statement, search, status, payment_status, start_date_from, start_date_to
+        )
+
+        return self.session.exec(statement).one()
