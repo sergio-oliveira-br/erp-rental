@@ -27,10 +27,13 @@ export function useVerify2FA() {
     onSuccess: (data) => {
       // Salva dados essenciais da sessão no localStorage
       localStorage.setItem('erp_access_token', data.access_token);
-      localStorage.setItem('erp_user', JSON.stringify({
-        username: data.username,
-        is_admin: data.is_admin
-      }));
+      localStorage.setItem(
+        'erp_user',
+        JSON.stringify({
+          username: data.username,
+          is_admin: data.is_admin,
+        })
+      );
 
       toast.success(`Bem-vindo, ${data.username}!`, {
         description: data.is_admin ? 'Acesso do tipo Administrador.' : 'Acesso de Operador.',
@@ -54,6 +57,30 @@ export function useCreateUser() {
     onError: (error: any) => {
       // Utiliza diretamente a mensagem tratada pelo interceptor do apiClient
       toast.error(error.message || 'Erro ao cadastrar usuário.');
+    },
+  });
+}
+
+// Hook padronizado para Acesso Convidado (Modo Demo)
+export function useGuestLogin() {
+  return useMutation({
+    mutationFn: () => userService.guestLogin(),
+    onSuccess: (data) => {
+      localStorage.setItem('erp_access_token', data.access_token);
+      localStorage.setItem(
+        'erp_user',
+        JSON.stringify({
+          username: data.username,
+          is_admin: data.is_admin,
+        })
+      );
+
+      toast.success('Acesso de Demonstração iniciado!', {
+        description: 'Você está navegando no modo Convidado com dados fictícios.',
+      });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Erro ao acessar como Convidado.');
     },
   });
 }
