@@ -1,0 +1,51 @@
+# .github/workflows/deploy-backend.yml
+
+name: Deploy Backend to AWS Lambda
+
+on:
+  push:
+    branches:
+      - main  # Dispara o deploy automático ao fazer push na main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar Dependências e Empacotar
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          
+          # Cria a pasta de build para o Lambda
+          mkdir -p package
+          pip install --target ./package -r requirements.txt
+          
+          # Copia o código fonte da aplicação para a pasta de pacote
+          cp -r src ./package/
+          
+          # Cria o arquivo ZIP final para envio à AWS
+          cd package
+          zip -r ../deployment_package.zip .
+          cd ..
+
+      - name: Configurar Credenciais AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: sa-east-1
+
+      - name: Atualizar Função no AWS Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name erp-rental-backend \
+            --zip-file fileb://backend/deployment_package.zip
