@@ -62,3 +62,15 @@ class RentalRepositoryPort(ABC):
     def get_audit_logs(self, rental_id: uuid.UUID) -> List[Dict[str, Any]]:
         """Recupera o histórico de auditoria de um contrato de locação."""
         pass
+
+    @abstractmethod
+    def count_filtered_rentals(
+            self,
+            owner_id: uuid.UUID,
+            search: Optional[str] = None,
+            status: Optional[str] = None,
+            payment_status: Optional[str] = None,
+            start_date_from: Optional[date] = None,
+            start_date_to: Optional[date] = None,
+    ) -> int:
+        pass
