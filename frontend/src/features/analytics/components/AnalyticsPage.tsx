@@ -1,4 +1,5 @@
-// Exemplo de integração na AnalyticsPage.tsx
+// frontend/src/features/analytics/components/AnalyticsPage.tsx
+
 import { useState } from 'react';
 import { BarChart3, Calendar } from 'lucide-react';
 import { useRentals } from '@/features/rentals/hooks/useRentals';
@@ -8,22 +9,41 @@ import { ClientPerformanceSection } from './ClientPerformanceSection';
 import { DiscountAuditSection } from './DiscountAuditSection';
 
 export function AnalyticsPage() {
-
   const [timeFilter, setTimeFilter] = useState<'current_month' | 'last_3_months' | 'year_2026' | 'all'>('current_month');
 
-  // Ajustado: enviando page: 1 e limit: 100
   const { data: rentalsData } = useRentals({ page: 1, limit: 100 });
-  const rentals = Array.isArray(rentalsData) ? rentalsData : (rentalsData as any)?.items || [];
+  const rawRentals = Array.isArray(rentalsData) ? rentalsData : (rentalsData as any)?.items || [];
 
-  //const [timeFilter, setTimeFilter] = useState<'current_month' | 'last_3_months' | 'year_2026' | 'all'>('current_month');
+  // Função cirúrgica para filtrar as locações com base no timeFilter selecionado
+  const filteredRentals = rawRentals.filter((rental: any) => {
+    if (timeFilter === 'all') return true;
 
-  // Buscando as locações para processar as métricas
-  // const { data: rentalsData } = useRentals({ limit: 500 });
-  // const rentals = Array.isArray(rentalsData) ? rentalsData : (rentalsData as any)?.items || [];
+    const rentalDate = new Date(rental.start_date);
+    const now = new Date('2026-10-18'); // Considera a data atual do contexto
+
+    if (timeFilter === 'current_month') {
+      return (
+        rentalDate.getMonth() === now.getMonth() &&
+        rentalDate.getFullYear() === now.getFullYear()
+      );
+    }
+
+    if (timeFilter === 'last_3_months') {
+      const threeMonthsAgo = new Date(now);
+      threeMonthsAgo.setMonth(now.getMonth() - 3);
+      return rentalDate >= threeMonthsAgo && rentalDate <= now;
+    }
+
+    if (timeFilter === 'year_2026') {
+      return rentalDate.getFullYear() === 2026;
+    }
+
+    return true;
+  });
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-8">
-      {/* Cabeçalho e Filtros (já criados) */}
+      {/* Cabeçalho e Filtros */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
@@ -47,20 +67,18 @@ export function AnalyticsPage() {
         </div>
       </div>
 
-
-
       <div className="space-y-6">
-        {/* BLOCO 1: Visão Financeira */}
-        <FinancialOverviewSection rentals={rentals} timeFilter={timeFilter} />
+        {/* BLOCO 1: Visão Financeira (Recebe o timeFilter e os dados filtrados) */}
+        <FinancialOverviewSection rentals={filteredRentals} timeFilter={timeFilter} />
 
         {/* BLOCO 2: Receita por Material */}
-        <MaterialRevenueSection rentals={rentals} />
+        <MaterialRevenueSection rentals={filteredRentals} />
 
         {/* BLOCO 3: Top Clientes */}
-        <ClientPerformanceSection rentals={rentals} />
+        <ClientPerformanceSection rentals={filteredRentals} />
 
         {/* Bloco 4: Governança & Descontos */}
-        <DiscountAuditSection rentals={rentals} />
+        <DiscountAuditSection rentals={filteredRentals} />
       </div>
     </div>
   );
