@@ -1,0 +1,7 @@
+# terraform.tfvars.example
+
+aws_region   = "sa-east-1"
+project_name = "erp-rental-backend"
+environment_variables = {
+  DATABASE_URL = "postgresql://usuario:senha@seu-host-neon/neondb?sslmode=require"
+}
