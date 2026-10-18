@@ -22,6 +22,12 @@ export const userService = {
     return response.data;
   },
 
+  // Acesso Convidado (Modo Demo / Portfólio): Autenticação direta sem 2FA
+  guestLogin: async (): Promise<AuthTokenResponse> => {
+    const response = await apiClient.post<AuthTokenResponse>('/auth/guest');
+    return response.data;
+  },
+
   // Rota protegida (Exclusiva para Administradores): Cadastra um novo operador/admin
   registerUser: async (payload: CreateUserPayload): Promise<{ message: string; id: string; is_admin: boolean }> => {
     const response = await apiClient.post('/auth/register', payload);
