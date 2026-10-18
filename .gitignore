@@ -13,7 +13,7 @@ frontend/node_modules/
 frontend/dist/
 
 # Terraform
-infra/.terraform/
+terraform/.terraform/
 *.tfstate
 *.tfstate.backup
 
