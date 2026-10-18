@@ -44,7 +44,7 @@ router = APIRouter(prefix="/rentals", tags=["Rentals"])
 def create_rental(
     payload: RentalCreateSchema,
     use_case: CreateRentalUseCase = Depends(get_create_rental_use_case),
-    current_user: UserTable = Depends(get_current_user)  # <-- Identifica o tenant logado
+    current_user: UserTable = Depends(get_current_user)
 ):
     try:
         return use_case.execute(
@@ -52,7 +52,7 @@ def create_rental(
             material_id=payload.material_id,
             start_date=payload.start_date,
             end_date=payload.end_date,
-            owner_id=current_user.owner_id,  # <-- Associa ao tenant atual
+            owner_id=current_user.owner_id, 
             delivery_address=payload.delivery_address,
             notes=payload.notes,
             enable_sms_notification=payload.enable_sms_notification,
@@ -62,7 +62,7 @@ def create_rental(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.get("/", response_model=List[RentalResponseSchema])
+@router.get("/", response_model=PaginatedResponse[RentalResponseSchema])
 def list_rentals(
     page: int = Query(1, ge=1, description="Número da página"),
     limit: int = Query(10, ge=1, le=100, description="Itens por página"),
@@ -72,11 +72,11 @@ def list_rentals(
     start_date_from: Optional[date] = Query(None, description="Data de início (de)"),
     start_date_to: Optional[date] = Query(None, description="Data de início (até)"),
     use_case: ListFilteredRentalsUseCase = Depends(get_list_filtered_rentals_use_case),
-    current_user: UserTable = Depends(get_current_user)  # <-- Garante o isolamento na listagem filtrada
+    current_user: UserTable = Depends(get_current_user)
 ):
     try:
-        rentals = use_case.execute(
-            owner_id=current_user.owner_id,  # <-- Filtra estritamente pelo tenant
+        result = use_case.execute(
+            owner_id=current_user.owner_id,
             page=page,
             limit=limit,
             search=search,
@@ -85,7 +85,7 @@ def list_rentals(
             start_date_from=start_date_from,
             start_date_to=start_date_to,
         )
-        return rentals
+        return result
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
