@@ -13,5 +13,6 @@ variable "filename" {
 }
 
 variable "environment_variables" {
-  type = map(string), default = {}
+  type = map(string)
+  default = {}
 }
