@@ -16,6 +16,7 @@ frontend/dist/
 terraform/.terraform/
 *.tfstate
 *.tfstate.backup
+terraform/environments/production/terraform.tfvars
 
 # IDE (PyCharm / IntelliJ)
 .idea/
