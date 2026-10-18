@@ -5,7 +5,8 @@ variable "aws_region" {
 }
 
 variable "project_name" {
-  type = string, default = "erp-rental-backend"
+  type = string
+  default = "erp-rental-backend"
 }
 
 variable "environment_variables" {
