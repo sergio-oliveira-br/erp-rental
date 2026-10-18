@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ShieldCheck } from 'lucide-react';
-import { useLoginStep1, useVerify2FA } from '../hooks/useUsers';
+import { useLoginStep1, useVerify2FA, useGuestLogin } from '../hooks/useUsers';
 import { LoginFormStep } from './LoginFormStep';
 import { TwoFactorFormStep } from './TwoFactorFormStep';
 
@@ -17,6 +17,7 @@ export function LoginPage({ onSuccessLogin }: LoginPageProps) {
 
   const loginStep1 = useLoginStep1();
   const verify2FA = useVerify2FA();
+  const guestLogin = useGuestLogin();
 
   const handleStep1Submit = async (userVal: string, passVal: string) => {
     setUsername(userVal);
@@ -32,6 +33,11 @@ export function LoginPage({ onSuccessLogin }: LoginPageProps) {
     onSuccessLogin();
   };
 
+  const handleGuestAccess = async () => {
+    await guestLogin.mutateAsync();
+    onSuccessLogin();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50/50 p-4">
       <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8 shadow-sm space-y-6">
@@ -43,7 +49,7 @@ export function LoginPage({ onSuccessLogin }: LoginPageProps) {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">ERP Locações</h1>
           <p className="text-sm text-gray-500">
-            {step === 1 ? 'Insira suas credenciais para acessar o sistema' : 'Verificação de Segurança (2FA)'}
+            {step === 1 ? 'Insira suas credenciais ou acesse no modo demonstração' : 'Verificação de Segurança (2FA)'}
           </p>
         </div>
 
@@ -51,7 +57,9 @@ export function LoginPage({ onSuccessLogin }: LoginPageProps) {
         {step === 1 ? (
           <LoginFormStep
             onSubmit={handleStep1Submit}
+            onGuestAccess={handleGuestAccess}
             isLoading={loginStep1.isPending}
+            isGuestLoading={guestLogin.isPending}
           />
         ) : (
           <TwoFactorFormStep
