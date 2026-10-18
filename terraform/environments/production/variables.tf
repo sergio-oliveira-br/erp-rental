@@ -10,5 +10,6 @@ variable "project_name" {
 }
 
 variable "environment_variables" {
-  type = map(string), default = {}
+  type = map(string)
+  default = {}
 }
