@@ -1,0 +1,6 @@
+id,owner_id,name,daily_rate,description,is_available,is_active,created_at
+33b8f3fa-4012-bbaa-ff3c-bc9d6beeff22,ef9da18f-40c1-4406-a653-a4872862b616,plastic,29.99,Sed do eiusmod tempor incididunt,true,true,2025-11-13
+882de75c-8c39-cd12-e25e-0b8cf699a46c,ef9da18f-40c1-4406-a653-a4872862b616,plastic,4.29,Consectetur adipiscing elit,true,true,2026-02-19
+da1e869f-acd0-5804-08fb-2d8bb4fb12dc,ef9da18f-40c1-4406-a653-a4872862b616,metal,34.99,Sed do eiusmod tempor incididunt,true,true,2025-12-01
+8bd33be6-b87e-85dd-f7cf-fb5f84874bb4,ef9da18f-40c1-4406-a653-a4872862b616,metal,22.99,Lorem ipsum dolor sit amet,true,true,2026-08-20
+403eec4a-eaee-5dbb-53cc-8de8caad2ff5,ef9da18f-40c1-4406-a653-a4872862b616,fabric,39.99,Consectetur adipiscing elit,true,true,2025-09-15
