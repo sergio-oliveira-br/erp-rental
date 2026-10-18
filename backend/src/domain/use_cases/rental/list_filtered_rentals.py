@@ -1,9 +1,8 @@
 # backend/src/domain/use_cases/rental/list_filtered_rentals.py
 
 from datetime import date
-from typing import List, Optional
+from typing import Dict, Any, Optional
 import uuid
-from src.domain.entities.rental import Rental
 from src.domain.ports.rental_repository import RentalRepositoryPort
 
 class ListFilteredRentalsUseCase:
@@ -20,13 +19,12 @@ class ListFilteredRentalsUseCase:
         payment_status: Optional[str] = None,
         start_date_from: Optional[date] = None,
         start_date_to: Optional[date] = None,
-    ) -> List[Rental]:
+    ) -> Dict[str, Any]:
 
-        # Garante limites válidos de paginação
         page = max(1, page)
-        limit = max(1, min(limit, 100)) # Limite máximo de 100 por página para segurança
+        limit = max(1, min(limit, 100))
 
-        return self.rental_repo.get_filtered_rentals(
+        items = self.rental_repo.get_filtered_rentals(
             owner_id=owner_id,
             page=page,
             limit=limit,
@@ -36,3 +34,19 @@ class ListFilteredRentalsUseCase:
             start_date_from=start_date_from,
             start_date_to=start_date_to,
         )
+
+        total = self.rental_repo.count_filtered_rentals(
+            owner_id=owner_id,
+            search=search,
+            status=status,
+            payment_status=payment_status,
+            start_date_from=start_date_from,
+            start_date_to=start_date_to,
+        )
+
+        return {
+            "items": items,
+            "total": total,
+            "page": page,
+            "limit": limit
+        }
