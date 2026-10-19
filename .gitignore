@@ -28,3 +28,7 @@ dummy.zip
 # Variáveis de Ambiente
 .env
 *.env
+
+# Ficheiros criados pelo macOS
+.DS_Store
+**/.DS_Store
