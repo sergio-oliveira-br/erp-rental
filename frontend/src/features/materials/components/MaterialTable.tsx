@@ -1,6 +1,6 @@
 // frontend/src/features/materials/components/MaterialTable.tsx
 
-import {Edit2, Trash2, RotateCcw, Package, CheckCircle2, XCircle, CheckCircle} from 'lucide-react';
+import {Edit2, Trash2, RotateCcw, Package, CheckCircle2, XCircle} from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import type { Material } from '@/types';
