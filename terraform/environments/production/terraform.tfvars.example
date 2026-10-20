@@ -2,6 +2,9 @@
 
 aws_region   = "sa-east-1"
 project_name = "erp-rental-backend"
+
+lambda_artifacts_bucket_name = "erp-rental-backend-artifacts-prod-123456"
+
 environment_variables = {
   DATABASE_URL = "postgresql://usuario:senha@seu-host-neon/neondb?sslmode=require"
 }
