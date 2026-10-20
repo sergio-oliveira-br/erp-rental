@@ -9,9 +9,8 @@
     "skipLibCheck": true,
 
     // TypeScript reconhecer o @/)
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
 
 
