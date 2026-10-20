@@ -14,7 +14,10 @@ export function NavbarUserMenu({ user, onLogout }: NavbarUserMenuProps) {
       <div className="text-right">
         <div className="text-xs font-semibold text-gray-900 flex items-center gap-1 justify-end">
           {user.username}
-          {user.is_admin && <Shield className="w-3 h-3 text-primary" title="Administrador" />}
+          {user.is_admin &&
+              <span title="Administrador" className="inline-flex">
+                <Shield className="w-3 h-3 text-primary" />
+            </span>}
         </div>
         <div className="text-[10px] text-gray-500 uppercase tracking-wider">
           {user.is_admin ? 'Admin' : 'Operador'}
