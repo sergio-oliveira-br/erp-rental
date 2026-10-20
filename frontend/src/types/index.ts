@@ -58,7 +58,7 @@ export interface Material {
   is_active: boolean;
   created_at: string;
   updated_at: string;
-  is_available: string
+  is_available: boolean
 }
 
 export interface MaterialCreatePayload {
