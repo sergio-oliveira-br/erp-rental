@@ -1,3 +1,4 @@
+
 # .github/workflows/deploy-backend.yml
 
 name: Deploy Backend to AWS Lambda
@@ -5,7 +6,10 @@ name: Deploy Backend to AWS Lambda
 on:
   push:
     branches:
-      - main  # Dispara o deploy automático ao fazer push na main
+      - main
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
@@ -22,20 +26,22 @@ jobs:
 
       - name: Instalar Dependências e Empacotar
         run: |
+          set -euo pipefail
+
           cd backend
           python -m pip install --upgrade pip
-          
-          # Cria a pasta de build para o Lambda
+
           mkdir -p package
           pip install --target ./package -r requirements.txt
-          
-          # Copia o código fonte da aplicação para a pasta de pacote
+
           cp -r src ./package/
-          
-          # Cria o arquivo ZIP final para envio à AWS
+
           cd package
           zip -r ../deployment_package.zip .
           cd ..
+
+          echo "Tamanho do pacote:"
+          du -h deployment_package.zip
 
       - name: Configurar Credenciais AWS
         uses: aws-actions/configure-aws-credentials@v4
@@ -44,8 +50,37 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: sa-east-1
 
-      - name: Atualizar Função no AWS Lambda
+      - name: Upload do pacote para S3
+        env:
+          S3_BUCKET: ${{ vars.LAMBDA_ARTIFACTS_BUCKET }}
         run: |
+          set -euo pipefail
+
+          S3_KEY="releases/${GITHUB_SHA}/deployment_package.zip"
+
+          aws s3 cp \
+            backend/deployment_package.zip \
+            "s3://${S3_BUCKET}/${S3_KEY}" \
+            --region sa-east-1
+
+          echo "S3_KEY=${S3_KEY}" >> "$GITHUB_ENV"
+
+      - name: Atualizar Função no AWS Lambda
+        env:
+          S3_BUCKET: ${{ vars.LAMBDA_ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+
           aws lambda update-function-code \
             --function-name erp-rental-backend \
-            --zip-file fileb://backend/deployment_package.zip
+            --s3-bucket "${S3_BUCKET}" \
+            --s3-key "${S3_KEY}" \
+            --region sa-east-1
+
+      - name: Aguardar Atualização da Lambda
+        run: |
+          aws lambda wait function-updated \
+            --function-name erp-rental-backend \
+            --region sa-east-1
+
+          echo "Deploy da Lambda concluído."
