@@ -1,22 +1,50 @@
 // frontend/src/features/users/components/LoginPage.tsx
 
+import { useState } from 'react';
 import { ShieldCheck } from 'lucide-react';
-import { useLoginStep1, useGuestLogin } from '../hooks/useUsers';
+import { useLoginStep1, useVerify2FA, useGuestLogin } from '../hooks/useUsers';
 import { LoginFormStep } from './LoginFormStep';
+import { TwoFactorFormStep } from './TwoFactorFormStep';
 
 interface LoginPageProps {
   onSuccessLogin: () => void;
 }
 
 export function LoginPage({ onSuccessLogin }: LoginPageProps) {
+  const [step, setStep] = useState<1 | 2>(1);
+  const [username, setUsername] = useState('');
+  const [phoneHint, setPhoneHint] = useState('');
+
   const loginStep1 = useLoginStep1();
+  const verify2FA = useVerify2FA();
   const guestLogin = useGuestLogin();
 
-  const handleStep1Submit = async (userVal: string, passVal: string) => {
-    // O backend agora devolve o JWT diretamente após validar as credenciais.
-    await loginStep1.mutateAsync({
+  const handleStep1Submit = async (
+    userVal: string,
+    passVal: string
+  ) => {
+    setUsername(userVal);
+
+    const res = await loginStep1.mutateAsync({
       username: userVal,
       password: passVal,
+    });
+
+    if (res.requires_2fa) {
+      setPhoneHint(res.phone_hint);
+      setStep(2);
+      return;
+    }
+
+    // Só concluir se o hook já tiver estabelecido
+    // a sessão e armazenado o token, quando aplicável.
+    onSuccessLogin();
+  };
+
+  const handleStep2Submit = async (codeVal: string) => {
+    await verify2FA.mutateAsync({
+      username,
+      code: codeVal,
     });
 
     onSuccessLogin();
@@ -40,20 +68,32 @@ export function LoginPage({ onSuccessLogin }: LoginPageProps) {
           </h1>
 
           <p className="text-sm text-gray-500">
-            Insira suas credenciais ou acesse no modo demonstração
+            {step === 1
+              ? 'Insira suas credenciais ou acesse no modo demonstração'
+              : 'Verificação de Segurança (2FA)'}
           </p>
         </div>
 
-        <LoginFormStep
-          onSubmit={handleStep1Submit}
-          onGuestAccess={handleGuestAccess}
-          isLoading={loginStep1.isPending}
-          isGuestLoading={guestLogin.isPending}
-        />
+        {step === 1 ? (
+          <LoginFormStep
+            onSubmit={handleStep1Submit}
+            onGuestAccess={handleGuestAccess}
+            isLoading={loginStep1.isPending}
+            isGuestLoading={guestLogin.isPending}
+          />
+        ) : (
+          <TwoFactorFormStep
+            phoneHint={phoneHint}
+            onBack={() => setStep(1)}
+            onSubmit={handleStep2Submit}
+            isLoading={verify2FA.isPending}
+          />
+        )}
       </div>
     </div>
   );
 }
+
 
 //
 // import { useState } from 'react';
