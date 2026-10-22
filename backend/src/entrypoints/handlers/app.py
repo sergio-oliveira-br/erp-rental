@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from mangum import Mangum
 from aws_lambda_powertools import Logger
 
-from src.domain.entities import users
 from src.domain.exceptions.domain_exceptions import (
     EntityNotFoundException,
     BusinessRuleException,
