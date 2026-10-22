@@ -18,7 +18,8 @@ psycopg2-binary>=2.9.9
 
 # Autenticação
 python-jose[cryptography]>=3.3.0
-passlib[bcrypt]>=1.7.4
+passlib==1.7.4
+bcrypt==4.3.0
 
 # Testes
 pytest>=8.0.0
