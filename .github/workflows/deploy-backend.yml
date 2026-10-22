@@ -65,6 +65,20 @@ jobs:
 
           echo "S3_KEY=${S3_KEY}" >> "$GITHUB_ENV"
 
+      - name: Validar pacote Lambda
+        run: |
+          set -euo pipefail
+        
+          echo "Tamanho compactado:"
+          du -h backend/deployment_package.zip
+        
+          echo "Verificando handler:"
+          unzip -l backend/deployment_package.zip \
+            | grep 'src/entrypoints/handlers/app.py'
+        
+          echo "Validando integridade do ZIP:"
+          unzip -t backend/deployment_package.zip
+
       - name: Atualizar Função no AWS Lambda
         env:
           S3_BUCKET: ${{ vars.LAMBDA_ARTIFACTS_BUCKET }}
