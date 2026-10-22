@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from mangum import Mangum
 from aws_lambda_powertools import Logger
+from starlette.middleware.cors import CORSMiddleware
 
 from src.domain.exceptions.domain_exceptions import (
     EntityNotFoundException,
@@ -18,6 +19,16 @@ app = FastAPI(
     title="ERP Rental API",
     version="1.0.0",
     description="API Serverless para gestão de aluguel de materiais"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://erp-rental.pages.dev",
+    ],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- MAPEAMENTO GLOBAL DE EXCEÇÕES ---
