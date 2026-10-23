@@ -35,7 +35,8 @@ class CreateRentalUseCase:
             delivery_address: Optional[str] = None,
             notes: Optional[str] = None,
             enable_sms_notification: bool = False,
-            daily_rate: Optional[Decimal] = None
+            daily_rate: Optional[Decimal] = None,
+            quantity: int = 1,
     ) -> Rental:
         # 1. Validar cliente vinculado ao owner_id do tenant logado
         client = self.client_repo.get_by_id(client_id, owner_id=owner_id)
@@ -66,7 +67,8 @@ class CreateRentalUseCase:
             daily_rate=final_daily_rate,
             delivery_address=final_delivery_address,
             notes=notes,
-            enable_sms_notification=enable_sms_notification
+            enable_sms_notification=enable_sms_notification,
+            quantity=quantity,
         )
 
         saved_rental = self.rental_repo.save(rental)
