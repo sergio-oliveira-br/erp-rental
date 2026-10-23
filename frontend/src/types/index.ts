@@ -108,6 +108,7 @@ export interface Rental {
   id: string;
   client_id: string;
   client_name?: string;
+  quantity: number;
   material_id: string;
   material_name?: string;
   start_date: string;
@@ -127,6 +128,7 @@ export interface Rental {
 export interface RentalCreatePayload {
   client_id: string;
   material_id: string;
+  quantity: number;
   start_date: string;
   end_date: string;
   delivery_address?: string;
