@@ -22,7 +22,7 @@ class ListFilteredRentalsUseCase:
     ) -> Dict[str, Any]:
 
         page = max(1, page)
-        limit = max(1, min(limit, 100))
+        limit = max(1, min(limit, 100000))
 
         items = self.rental_repo.get_filtered_rentals(
             owner_id=owner_id,
