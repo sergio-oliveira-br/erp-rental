@@ -47,6 +47,7 @@ def create_rental(
         return use_case.execute(
             client_id=payload.client_id,
             material_id=payload.material_id,
+            quantity=payload.quantity,
             start_date=payload.start_date,
             end_date=payload.end_date,
             owner_id=current_user.owner_id, 
