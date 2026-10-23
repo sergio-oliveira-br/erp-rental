@@ -1,4 +1,3 @@
-// frontend/src/features/analytics/components/ClientPerformanceSection.tsx
 
 import { useState } from 'react';
 import { Users, DollarSign, FileText, AlertCircle } from 'lucide-react';
@@ -18,12 +17,21 @@ interface ClientMetric {
   pendingBalance: number;
 }
 
-export function ClientPerformanceSection({ rentals }: ClientPerformanceSectionProps) {
+export function ClientPerformanceSection({
+  rentals,
+}: ClientPerformanceSectionProps) {
   const [page, setPage] = useState(1);
   const limit = 5; // Exibe 5 clientes por página
 
   // 1. Agrupar e somar os valores por cliente
-  const clientMap: { [key: string]: { name: string; count: number; spent: number; pending: number } } = {};
+  const clientMap: {
+    [key: string]: {
+      name: string;
+      count: number;
+      spent: number;
+      pending: number;
+    };
+  } = {};
 
   rentals
     .filter((r) => r.rental_status !== 'CANCELLED')
@@ -33,7 +41,12 @@ export function ClientPerformanceSection({ rentals }: ClientPerformanceSectionPr
       const totalVal = Number(rental.total_value || 0);
 
       if (!clientMap[id]) {
-        clientMap[id] = { name, count: 0, spent: 0, pending: 0 };
+        clientMap[id] = {
+          name,
+          count: 0,
+          spent: 0,
+          pending: 0,
+        };
       }
 
       clientMap[id].count += 1;
@@ -55,10 +68,20 @@ export function ClientPerformanceSection({ rentals }: ClientPerformanceSectionPr
     }))
     .sort((a, b) => b.totalSpent - a.totalSpent);
 
-  // 3. Paginação local
+  // 3. Calcular o faturamento total de todos os clientes
+  const totalRevenue = sortedClients.reduce(
+    (total, client) => total + client.totalSpent,
+    0
+  );
+
+  // 4. Paginação local
   const totalItems = sortedClients.length;
   const totalPages = Math.ceil(totalItems / limit) || 1;
-  const paginatedClients = sortedClients.slice((page - 1) * limit, page * limit);
+
+  const paginatedClients = sortedClients.slice(
+    (page - 1) * limit,
+    page * limit
+  );
 
   return (
     <div className="space-y-4">
@@ -74,12 +97,20 @@ export function ClientPerformanceSection({ rentals }: ClientPerformanceSectionPr
             <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
               <Users className="w-5 h-5" />
             </div>
+
             <div>
-              <h3 className="text-sm font-bold text-gray-900">Ranking por Volume Faturado</h3>
-              <p className="text-xs text-gray-500">Principais parceiros e seus saldos pendentes de pagamento</p>
+              <h3 className="text-sm font-bold text-gray-900">
+                Ranking por Volume Faturado
+              </h3>
+              <p className="text-xs text-gray-500">
+                Principais parceiros e seus saldos pendentes de pagamento
+              </p>
             </div>
           </div>
-          <span className="text-xs font-medium text-gray-400">Total: {totalItems} clientes</span>
+
+          <span className="text-xs font-medium text-gray-400">
+            Total: {totalItems} clientes
+          </span>
         </div>
 
         {paginatedClients.length === 0 ? (
@@ -90,6 +121,13 @@ export function ClientPerformanceSection({ rentals }: ClientPerformanceSectionPr
           <div className="divide-y divide-gray-100">
             {paginatedClients.map((client, idx) => {
               const globalIndex = (page - 1) * limit + idx + 1;
+
+              // Percentual do faturamento total representado pelo cliente
+              const percentage =
+                totalRevenue > 0
+                  ? (client.totalSpent / totalRevenue) * 100
+                  : 0;
+
               return (
                 <div
                   key={client.clientId || idx}
@@ -99,40 +137,82 @@ export function ClientPerformanceSection({ rentals }: ClientPerformanceSectionPr
                     <div className="w-8 h-8 rounded-full bg-gray-100 font-bold text-xs text-gray-600 flex items-center justify-center shrink-0">
                       #{globalIndex}
                     </div>
+
                     <div>
-                      <h4 className="text-sm font-bold text-gray-900">{client.clientName}</h4>
+                      <h4 className="text-sm font-bold text-gray-900">
+                        {client.clientName}
+                      </h4>
+
                       <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <FileText className="w-3.5 h-3.5 text-gray-400" />
-                          {client.totalContracts} {client.totalContracts === 1 ? 'contrato' : 'contratos'}
+                          {client.totalContracts}{' '}
+                          {client.totalContracts === 1
+                            ? 'contrato'
+                            : 'contratos'}
                         </span>
                       </div>
                     </div>
                   </div>
+                    <div className="flex flex-wrap items-end justify-end gap-4 sm:gap-6 self-end sm:self-auto text-right">
+                      {client.pendingBalance > 0 && (
+                        <div className="text-xs text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/60 flex items-center gap-1">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          <span>
+                            Pendente: R${' '}
+                            {client.pendingBalance.toLocaleString('pt-BR', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </span>
+                        </div>
+                      )}
 
-                  <div className="flex items-center gap-6 self-end sm:self-auto text-right">
-                    {client.pendingBalance > 0 && (
-                      <div className="text-xs text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/60 flex items-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        <span>Pendente: R$ {client.pendingBalance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                      </div>
-                    )}
+                        {/* Participação */}
+                        <div className="w-24 shrink-0 text-right self-start">
+                          <div className="h-4 flex items-center justify-end">
+                            <span className="text-xs leading-none text-gray-400 uppercase font-semibold whitespace-nowrap">
+                              Participação
+                            </span>
+                          </div>
+                          <div className="h-5 flex items-center justify-end">
+                            <span className="text-sm leading-none font-semibold text-indigo-600 tabular-nums">
+                              {percentage.toLocaleString('pt-BR', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1,
+                              })}
+                              %
+                            </span>
+                          </div>
+                        </div>
 
-                    <div>
-                      <span className="text-xs text-gray-400 uppercase font-semibold block">Total Investido</span>
-                      <span className="text-sm font-bold text-gray-900 flex items-center justify-end gap-0.5">
-                        <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
-                        {client.totalSpent.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </span>
+                        {/* Total Investido */}
+                        <div className="w-36 shrink-0 text-right self-start">
+                          <div className="h-4 flex items-center justify-end">
+                            <span className="text-xs leading-none text-gray-400 uppercase font-semibold whitespace-nowrap">
+                              Total Investido
+                            </span>
+                          </div>
+                          <div className="h-5 flex items-center justify-end">
+                            <span className="text-sm leading-none font-bold text-gray-900 flex items-center justify-end gap-0.5 tabular-nums">
+                              <DollarSign className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                              {client.totalSpent.toLocaleString('pt-BR', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                            </span>
+                          </div>
+                        </div>
+
+
                     </div>
-                  </div>
                 </div>
               );
             })}
           </div>
         )}
 
-        {/* Utilizando o seu componente Pagination oficial */}
+        {/* Paginação oficial: 5 clientes por página */}
         <div className="p-4 bg-gray-50/50 border-t border-gray-100">
           <Pagination
             page={page}
