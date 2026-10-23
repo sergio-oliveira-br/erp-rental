@@ -21,6 +21,7 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [notes] = useState('');
   const [customDailyRate, setCustomDailyRate] = useState<string>('');
+  const [quantity, setQuantity] = useState('1');
 
   // Limpa o formulário sempre que o modal for fechado ou reaberto
   useEffect(() => {
@@ -31,6 +32,7 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
       setEndDate('');
       setDeliveryAddress('');
       setCustomDailyRate('');
+      setQuantity('1');
     }
   }, [isOpen]);
 
@@ -66,20 +68,35 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    await createRental.mutateAsync({
-      client_id: clientId,
-      material_id: materialId,
-      start_date: startDate,
-      end_date: endDate,
-      delivery_address: deliveryAddress || undefined,
-      notes: notes || undefined,
-      daily_rate: numericCustomRate > 0 ? numericCustomRate : undefined,
-    });
+  const parsedQuantity = Number(quantity);
 
-    onClose();
-  };
+  if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
+    return;
+  }
+
+  if (!clientId || !materialId || !startDate || !endDate) {
+    return;
+  }
+
+  if (endDate < startDate) {
+    return;
+  }
+
+  await createRental.mutateAsync({
+    client_id: clientId,
+    material_id: materialId,
+    start_date: startDate,
+    end_date: endDate,
+    quantity: parsedQuantity,
+    delivery_address: deliveryAddress || undefined,
+    notes: notes || undefined,
+    daily_rate: numericCustomRate > 0 ? numericCustomRate : undefined,
+  });
+
+  onClose();
+};
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
@@ -132,6 +149,31 @@ export function RentalFormModal({ isOpen, onClose }: RentalFormModalProps) {
               ))}
             </select>
           </div>
+
+
+          <div>
+            <label
+              htmlFor="rental-quantity"
+              className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+              Quantidade de Itens *
+            </label>
+
+            <Input
+              id="rental-quantity"
+              type="number"
+              min="1"
+              step="1"
+              required
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              placeholder="Ex.: 20"
+            />
+
+            <p className="text-xs text-gray-500 mt-1">
+              Informe quantas unidades deste equipamento serão alugadas.
+            </p>
+          </div>
+
 
           {/* Campo de Valor da Diária Editável com Alerta Visual de Desconto */}
           {materialId && (
