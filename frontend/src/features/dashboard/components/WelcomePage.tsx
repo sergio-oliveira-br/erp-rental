@@ -11,7 +11,7 @@ interface WelcomePageProps {
 }
 
 export function WelcomePage({ onSelectTab }: WelcomePageProps) {
-  const { data, isLoading } = useRentals({ page: 1, limit: 100 });
+  const { data, isLoading } = useRentals({ page: 1, limit: 10000 });
 
   const rentals: Rental[] = Array.isArray(data)
     ? data
