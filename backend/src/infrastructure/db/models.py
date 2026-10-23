@@ -39,6 +39,7 @@ class RentalTable(SQLModel, table=True):
     owner_id: uuid.UUID = Field(index=True)
     client_id: uuid.UUID = Field(foreign_key="clients.id", index=True)
     material_id: uuid.UUID = Field(foreign_key="materials.id", index=True)
+    quantity: int = Field(default=1, ge=1)
     start_date: date = Field()
     end_date: date = Field()
     daily_rate: Decimal = Field(max_digits=10, decimal_places=2)
