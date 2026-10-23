@@ -12,8 +12,8 @@ import type { Client } from '@/types';
 
 const clientSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
-  phone: z.string().min(10, 'Telefone deve ter ao menos 10 dígitos'),
-  address: z.string().optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),E
 });
 
 type ClientFormData = z.infer<typeof clientSchema>;
@@ -48,7 +48,7 @@ export function ClientFormModal({ isOpen, onClose, clientToEdit }: ClientFormMod
     if (clientToEdit) {
       reset({
         name: clientToEdit.name,
-        phone: clientToEdit.phone,
+        phone: clientToEdit.phone || '',
         address: clientToEdit.address || '',
       });
     } else {
