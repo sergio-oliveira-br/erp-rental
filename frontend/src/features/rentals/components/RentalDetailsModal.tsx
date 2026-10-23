@@ -171,8 +171,18 @@ export function RentalDetailsModal({ rental, isOpen, onClose }: RentalDetailsMod
                 <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-100 flex items-start gap-3">
                   <Package className="w-5 h-5 text-gray-400 mt-0.5 shrink-0" />
                   <div>
-                    <span className="text-xs font-medium text-gray-400 block">Equipamento</span>
-                    <span className="text-sm font-semibold text-gray-900">{rental.material_name || 'N/D'}</span>
+                    <span className="text-xs font-medium text-gray-400 block">
+                      Equipamento
+                    </span>
+
+                    <span className="text-sm font-semibold text-gray-900 block">
+                      {rental.material_name || 'N/D'}
+                    </span>
+
+                    <span className="text-xs text-gray-500 mt-1 block">
+                      Quantidade: {rental.quantity ?? 1}{' '}
+                      {(rental.quantity ?? 1) === 1 ? 'unidade' : 'unidades'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -191,8 +201,17 @@ export function RentalDetailsModal({ rental, isOpen, onClose }: RentalDetailsMod
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs text-gray-500 block">Diária</span>
-                  <span className="text-sm font-semibold text-gray-700">R$ {Number(rental.daily_rate).toFixed(2).replace('.', ',')}</span>
+                  <span className="text-xs text-gray-500 block">
+                    Diária por unidade
+                  </span>
+
+                  <span className="text-sm font-semibold text-gray-700">
+                    R$ {Number(rental.daily_rate).toFixed(2).replace('.', ',')}
+                  </span>
+
+                  <span className="text-xs text-gray-500 block mt-1">
+                    {rental.quantity ?? 1} {(rental.quantity ?? 1) === 1 ? 'unidade' : 'unidades'}
+                  </span>
                 </div>
               </div>
 
