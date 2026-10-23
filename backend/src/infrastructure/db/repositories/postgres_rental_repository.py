@@ -24,6 +24,7 @@ class PostgresRentalRepository(RentalRepositoryPort):
             owner_id=model.owner_id,  # <-- Mapeia o owner_id para o domínio
             client_id=model.client_id,
             material_id=model.material_id,
+            quantity=model.quantity,
             start_date=start_d,
             end_date=end_d,
             daily_rate=model.daily_rate,
@@ -41,6 +42,7 @@ class PostgresRentalRepository(RentalRepositoryPort):
             owner_id=entity.owner_id, 
             client_id=entity.client_id,
             material_id=entity.material_id,
+            quantity=entity.quantity,
             start_date=entity.start_date,
             end_date=entity.end_date,
             daily_rate=entity.daily_rate,
