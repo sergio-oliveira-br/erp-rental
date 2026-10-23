@@ -65,7 +65,7 @@ def create_rental(
 @router.get("/", response_model=PaginatedResponse[RentalResponseSchema])
 def list_rentals(
     page: int = Query(1, ge=1, description="Número da página"),
-    limit: int = Query(10, ge=1, le=100, description="Itens por página"),
+    limit: int = Query(10, ge=1, description="Itens por página"),
     search: Optional[str] = Query(None, description="Busca por nome de cliente ou material"),
     status: Optional[str] = Query(None, description="Filtrar por status do contrato (ACTIVE, FINISHED, CANCELLED)"),
     payment_status: Optional[str] = Query(None, description="Filtrar por status de pagamento (PENDING, PAID)"),
