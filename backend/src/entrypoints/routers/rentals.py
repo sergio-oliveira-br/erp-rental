@@ -6,18 +6,15 @@ from typing import Optional, List
 
 from fastapi import APIRouter, Depends, status, HTTPException, Query
 
-from src.domain.entities.rental import RentalStatus
 from src.domain.exceptions.domain_exceptions import EntityNotFoundException, DomainException
 from src.domain.use_cases.rental.cancel_rental import CancelRentalUseCase
 from src.domain.use_cases.rental.finish_rental import FinishRentalUseCase
 from src.domain.use_cases.rental.list_filtered_rentals import ListFilteredRentalsUseCase
-from src.domain.use_cases.rental.list_rentals import ListRentalsUseCase
 from src.domain.use_cases.rental.reactivate_rental import ReactivateRentalUseCase
 from src.domain.use_cases.rental.update_payment_status import UpdatePaymentStatusUseCase
 from src.domain.use_cases.rental.update_rental import UpdateRentalUseCase
 from src.entrypoints.dependencies import (
     get_create_rental_use_case,
-    get_list_rentals_use_case,
     get_finish_rental_use_case,
     get_reactivate_rental_use_case,
     get_update_payment_status_use_case,
