@@ -70,6 +70,12 @@ class MaterialResponseSchema(BaseModel):
 class RentalCreateSchema(BaseModel):
     client_id: uuid.UUID
     material_id: uuid.UUID
+    quantity: int = Field(
+        default=1,
+        ge=1,
+        description="Quantidade de unidades alugadas",
+        examples=[20],
+    )
     start_date: date
     end_date: date
     delivery_address: Optional[str] = Field(
@@ -92,6 +98,7 @@ class RentalResponseSchema(BaseModel):
     client_id: uuid.UUID
     client_name: Optional[str] = None
     material_id: uuid.UUID
+    quantity: int
     material_name: Optional[str] = None
     start_date: date
     end_date: date
