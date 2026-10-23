@@ -124,7 +124,10 @@ class PostgresRentalRepository(RentalRepositoryPort):
 
         statement = self._apply_rental_filters(statement, search, status, payment_status, start_date_from, start_date_to)
 
-        statement = statement.order_by(RentalTable.created_at.desc())
+        statement = statement.order_by(
+            RentalTable.start_date.desc(),
+            RentalTable.id.desc(),
+        )
 
         offset = (page - 1) * limit
         statement = statement.offset(offset).limit(limit)
