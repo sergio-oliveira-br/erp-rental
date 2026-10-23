@@ -20,6 +20,10 @@ class PaymentStatus(str, Enum):
 class Rental:
     client_id: uuid.UUID
     material_id: uuid.UUID
+    quantity: int
+    start_date: date
+    end_date: date
+    daily_rate: Decimal
     start_date: date
     end_date: date
     daily_rate: Decimal
@@ -45,7 +49,7 @@ class Rental:
     @property
     def total_amount(self) -> Decimal:
         """Calcula o valor total projetado do aluguel."""
-        return Decimal(self.total_days) * self.daily_rate
+        return Decimal(self.total_days) * self.daily_rate * self.quantity
 
     def is_expiring_on(self, target_date: date) -> bool:
         """Verifica se o aluguel encerra em uma data específica."""
