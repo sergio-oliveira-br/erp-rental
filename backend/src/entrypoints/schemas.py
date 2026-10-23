@@ -14,7 +14,12 @@ T = TypeVar("T")
 # --- CLIENT SCHEMAS ---
 class ClientCreateSchema(BaseModel):
     name: str = Field(..., min_length=2, max_length=100, example="João Silva")
-    phone: str = Field(..., min_length=8, max_length=20, example="11999998888")
+    phone: Optional[str] = Field(
+        default=None,
+        min_length=8,
+        max_length=20,
+        example="11999998888",
+    )
     address: str = Field(..., min_length=5, max_length=255, example="Rua A, 123 - São Paulo/SP")
 
 
@@ -30,7 +35,7 @@ class ClientResponseSchema(BaseModel):
 
     id: uuid.UUID
     name: str
-    phone: str
+    phone: Optional[str] = None
     address: str
     is_active: bool
     created_at: datetime
