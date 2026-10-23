@@ -14,32 +14,61 @@ export function AnalyticsPage() {
   const { data: rentalsData } = useRentals({ page: 1, limit: 100000 });
   const rawRentals = Array.isArray(rentalsData) ? rentalsData : (rentalsData as any)?.items || [];
 
-  // Função cirúrgica para filtrar as locações com base no timeFilter selecionado
+
+  // Filtra as locações conforme o período selecionado
   const filteredRentals = rawRentals.filter((rental: any) => {
     if (timeFilter === 'all') return true;
 
+    if (!rental.start_date) return false;
+
     const rentalDate = new Date(rental.start_date);
-    const now = new Date('2026-10-18'); // Considera a data atual do contexto
+
+    // Ignora datas inválidas
+    if (Number.isNaN(rentalDate.getTime())) return false;
+
+    const now = new Date();
+
+    // Início do mês atual, incluindo o primeiro dia
+    const startOfCurrentMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1
+    );
+
+    // Início do próximo mês, exclusivo
+    const startOfNextMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      1
+    );
 
     if (timeFilter === 'current_month') {
       return (
-        rentalDate.getMonth() === now.getMonth() &&
-        rentalDate.getFullYear() === now.getFullYear()
+        rentalDate >= startOfCurrentMonth &&
+        rentalDate < startOfNextMonth
       );
     }
 
     if (timeFilter === 'last_3_months') {
-      const threeMonthsAgo = new Date(now);
-      threeMonthsAgo.setMonth(now.getMonth() - 3);
-      return rentalDate >= threeMonthsAgo && rentalDate <= now;
+      const startDate = new Date(
+        now.getFullYear(),
+        now.getMonth() - 2,
+        1
+      );
+
+      return rentalDate >= startDate && rentalDate < startOfNextMonth;
     }
 
     if (timeFilter === 'year_2026') {
-      return rentalDate.getFullYear() === 2026;
+      return (
+        rentalDate >= new Date(2026, 0, 1) &&
+        rentalDate < new Date(2027, 0, 1)
+      );
     }
 
     return true;
   });
+
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-8">
