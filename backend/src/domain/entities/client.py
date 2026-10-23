@@ -8,7 +8,7 @@ import uuid
 @dataclass
 class Client:
     name: str
-    address: str
+    address:Optional[str]
     owner_id: uuid.UUID
     phone:Optional[str] = None
     id: uuid.UUID = field(default_factory=uuid.uuid4)
