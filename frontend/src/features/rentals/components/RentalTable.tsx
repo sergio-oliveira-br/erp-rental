@@ -46,6 +46,7 @@ export function RentalTable({
           <thead>
             <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
               <th className="px-6 py-3">Cliente / Equipamento</th>
+              <th className="px-6 py-3 text-center">QTD</th>
               <th className="px-6 py-3">Período</th>
               <th className="px-6 py-3">Valor Total</th>
               <th className="px-6 py-3">Pagamento</th>
@@ -92,6 +93,12 @@ export function RentalTable({
                       </div>
                     </div>
                     <div className="text-xs text-gray-500 mt-0.5">{rental.material_name || rental.material_id}</div>
+                  </td>
+
+                  <td className="px-6 py-4 text-center">
+                    <span className="inline-flex min-w-9 items-center justify-center rounded-md bg-gray-100 px-2.5 py-1 font-semibold text-gray-800">
+                      {rental.quantity ?? 1}
+                    </span>
                   </td>
 
                   {/* Período + Quantidade de Dias */}
