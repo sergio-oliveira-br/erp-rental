@@ -4,7 +4,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional, Generic, TypeVar, List
 import uuid
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.domain.entities.rental import PaymentStatus, RentalStatus
 
@@ -14,13 +14,15 @@ T = TypeVar("T")
 # --- CLIENT SCHEMAS ---
 class ClientCreateSchema(BaseModel):
     name: str = Field(..., min_length=2, max_length=100, example="João Silva")
-    phone: Optional[str] = Field(
-        default=None,
-        min_length=8,
-        max_length=20,
-        example="11999998888",
-    )
-    address: str = Field(..., min_length=5, max_length=255, example="Rua A, 123 - São Paulo/SP")
+    phone: Optional[str] = Field(None, min_length=8, max_length=20)
+    address: Optional[str]
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def normalize_phone(cls, value):
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
 
 
 class PaginatedResponse(BaseModel, Generic[T]):
@@ -35,16 +37,30 @@ class ClientResponseSchema(BaseModel):
 
     id: uuid.UUID
     name: str
-    phone: Optional[str] = None
-    address: str
+    phone: Optional[str] = Field(None, min_length=8, max_length=20)
+    address: Optional[str]
     is_active: bool
     created_at: datetime
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def normalize_phone(cls, value):
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
 
 
 class ClientUpdateSchema(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=100)
     phone: Optional[str] = Field(None, min_length=8, max_length=20)
-    address: Optional[str] = Field(None, min_length=5, max_length=255)
+    address: Optional[str]
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def normalize_phone(cls, value):
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
 
 
 # --- MATERIAL SCHEMAS ---
