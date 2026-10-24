@@ -1,7 +1,7 @@
 // frontend/src/types/index.ts
 
 // ==========================================
-// TIPOS GENÉRICOS E PAGINAÇÃO
+// TIPOS GENÉRICOS E PAGINAÇÃO E CHECK DE DUPLICAÇAO
 // ==========================================
 
 export interface PaginatedResponse<T> {
@@ -10,6 +10,11 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
   pages: number;
+}
+
+export interface DuplicateCheckResponse<T> {
+  has_duplicates: boolean;
+  matches: T[];
 }
 
 // ==========================================
@@ -44,10 +49,6 @@ export interface PossibleDuplicate {
   similarity: number;
 }
 
-export interface DuplicateCheckResponse<T> {
-  has_duplicates: boolean;
-  matches: T[];
-}
 
 export interface ClientDuplicateCheckPayload {
   name: string;
@@ -100,6 +101,32 @@ export interface GetMaterialsParams {
   search?: string;
   is_active?: boolean;
 }
+
+export interface PossibleMaterialDuplicate {
+  id: string;
+  name: string;
+  similarity: number;
+}
+
+export interface MaterialDuplicateCheckPayload {
+  name: string;
+}
+
+export type MaterialDuplicateCheckResponse =
+  DuplicateCheckResponse<PossibleMaterialDuplicate>;
+
+
+export interface MaterialDuplicateCheckPayload {
+  name: string;
+}
+
+export interface PossibleMaterialDuplicate {
+  id: string;
+  name: string;
+  similarity: number;
+}
+
+
 
 // ==========================================
 // MÓDULO DE ALUGUÉIS (rental_context)
