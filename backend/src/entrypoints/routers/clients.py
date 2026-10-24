@@ -6,15 +6,17 @@ from src.domain.exceptions.domain_exceptions import EntityNotFoundException
 from src.domain.use_cases.client.activate_client import ActivateClientUseCase
 from src.domain.use_cases.client.delete_client import DeleteClientUseCase
 from src.domain.use_cases.client.create_client import CreateClientUseCase
+from src.domain.use_cases.client.find_possible_duplicates import FindPossibleDuplicatesUseCase
 from src.entrypoints.dependencies import (
     get_create_client_use_case,
     get_list_clients_use_case,
     get_update_client_use_case,
     get_delete_client_use_case,
     get_activate_client_use_case,
-    get_current_user  # <-- Dependência que extrai o usuário logado via JWT
+    get_current_user, get_find_possible_duplicates_use_case  # <-- Dependência que extrai o usuário logado via JWT
 )
-from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema, PaginatedResponse, ClientUpdateSchema
+from src.entrypoints.schemas import ClientCreateSchema, ClientResponseSchema, PaginatedResponse, ClientUpdateSchema, \
+    ClientDuplicateCheckResponseSchema, ClientDuplicateCheckSchema
 from src.infrastructure.db.models import UserTable
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
@@ -117,3 +119,20 @@ def delete_client(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e),
         )
+
+
+@router.post("/check-duplicates", response_model=ClientDuplicateCheckResponseSchema)
+def check_client_duplicates(payload: ClientDuplicateCheckSchema,
+                            use_case: FindPossibleDuplicatesUseCase = Depends(
+                            get_find_possible_duplicates_use_case),
+                            current_user: UserTable = Depends(get_current_user)):
+
+    matches = use_case.execute(
+        name=payload.name,
+        owner_id=current_user.owner_id,
+    )
+
+    return {
+        "has_duplicates": bool(matches),
+        "matches": matches,
+    }
