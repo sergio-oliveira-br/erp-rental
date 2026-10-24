@@ -1,4 +1,4 @@
-# backend/src/domain/entities/possible_duplicate.py
+# backend/src/domain/entities/possible_client_duplicate.py
 
 from dataclasses import dataclass
 from typing import Optional
