@@ -1,13 +1,18 @@
 // frontend/src/features/materials/services/materialService.ts
 
 import { apiClient } from '@/api/client';
+
 import type {
   Material,
   MaterialCreatePayload,
   MaterialUpdatePayload,
+  MaterialDuplicateCheckPayload,
+  PossibleMaterialDuplicate,
+  DuplicateCheckResponse,
   GetMaterialsParams,
   PaginatedResponse,
 } from '@/types';
+
 
 export const materialService = {
   // Listagem paginada e com filtro por status
@@ -42,6 +47,17 @@ export const materialService = {
   // Reativação do material
   activateMaterial: async (id: string): Promise<Material> => {
     const response = await apiClient.patch<Material>(`/materials/${id}/activate`);
+    return response.data;
+  },
+
+  // Verificação de possíveis materiais duplicados
+  checkDuplicates: async (
+    payload: MaterialDuplicateCheckPayload,
+  ): Promise<DuplicateCheckResponse<PossibleMaterialDuplicate>> => {
+    const response = await apiClient.post<
+      DuplicateCheckResponse<PossibleMaterialDuplicate>
+    >('/materials/check-duplicates', payload);
+
     return response.data;
   },
 };
