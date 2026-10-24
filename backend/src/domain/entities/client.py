@@ -3,7 +3,13 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
+
+from src.domain.services.client.client_name_normalizer import (normalize_client_name)
+
 import uuid
+
+def __post_init__(self) -> None:
+    self.name = normalize_client_name(self.name)
 
 @dataclass
 class Client:
