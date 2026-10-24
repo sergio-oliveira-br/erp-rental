@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, status, HTTPException, Query
 from src.domain.exceptions.domain_exceptions import EntityNotFoundException, BusinessRuleException
 from src.domain.use_cases.material.activate_material import ActivateMaterialUseCase
 from src.domain.use_cases.material.delete_material import DeleteMaterialUseCase
+from src.domain.use_cases.material.find_possible_material_duplicates import FindPossibleMaterialDuplicatesUseCase
 from src.domain.use_cases.material.list_materials import ListMaterialsUseCase
 from src.domain.use_cases.material.update_material import UpdateMaterialUseCase
 from src.entrypoints.dependencies import (
@@ -15,10 +16,10 @@ from src.entrypoints.dependencies import (
     get_delete_material_use_case,
     get_activate_material_use_case,
     get_list_materials_use_case,
-    get_current_user
+    get_current_user, get_find_possible_material_duplicates_use_case
 )
 from src.entrypoints.schemas import MaterialCreateSchema, MaterialResponseSchema, MaterialUpdateSchema, \
-    PaginatedResponse
+    PaginatedResponse, MaterialDuplicateCheckResponseSchema, MaterialDuplicateCheckSchema
 from src.domain.use_cases.material.create_material import CreateMaterialUseCase
 from src.infrastructure.db.models import UserTable
 
@@ -113,3 +114,14 @@ def activate_material(
         return use_case.execute(material_id=material_id, owner_id=current_user.owner_id)
     except EntityNotFoundException as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+
+@router.post("/check-duplicates", response_model=MaterialDuplicateCheckResponseSchema)
+def check_material_duplicates(payload: MaterialDuplicateCheckSchema,
+                              use_case: FindPossibleMaterialDuplicatesUseCase = Depends(get_find_possible_material_duplicates_use_case),
+                              current_user: UserTable = Depends(get_current_user),):
+
+    matches = use_case.execute(name=payload.name,owner_id=current_user.owner_id)
+
+    return {"has_duplicates": bool(matches),"matches": matches}
