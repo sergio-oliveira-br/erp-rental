@@ -2,7 +2,7 @@
 import uuid
 from typing import List
 
-from src.domain.entities.possible_duplicate import PossibleDuplicate
+from src.domain.entities.possible_client_duplicate import PossibleDuplicate
 from src.domain.ports.client_repository import ClientRepositoryPort
 from src.domain.services.name_similarity import (
     calculate_name_similarity,
