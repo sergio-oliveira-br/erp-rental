@@ -13,6 +13,7 @@ from src.domain.use_cases.client.create_client import CreateClientUseCase
 from src.domain.use_cases.client.delete_client import DeleteClientUseCase
 from src.domain.use_cases.client.list_clients import ListClientsUseCase
 from src.domain.use_cases.client.update_client import UpdateClientUseCase
+from src.domain.use_cases.client.find_possible_duplicates import FindPossibleDuplicatesUseCase
 
 from src.domain.use_cases.material.activate_material import ActivateMaterialUseCase
 from src.domain.use_cases.material.create_material import CreateMaterialUseCase
@@ -76,6 +77,9 @@ def get_delete_client_use_case(client_repo: ClientRepositoryPort = Depends(get_c
 
 def get_activate_client_use_case(client_repo: ClientRepositoryPort = Depends(get_client_repository)) -> ActivateClientUseCase:
     return ActivateClientUseCase(client_repo=client_repo)
+
+def get_find_possible_duplicates_use_case(client_repo: ClientRepositoryPort = Depends(get_client_repository)) -> FindPossibleDuplicatesUseCase:
+    return FindPossibleDuplicatesUseCase(client_repo=client_repo)
 
 
 # -----------------
