@@ -1,7 +1,13 @@
 // frontend/src/features/clients/services/clientService.ts
 
 import { apiClient } from '@/api/client';
-import type { Client, ClientCreatePayload, ClientUpdatePayload, PaginatedResponse } from '@/types';
+import type {
+  Client,
+  ClientCreatePayload,
+  ClientDuplicateCheckPayload,
+  ClientUpdatePayload, DuplicateCheckResponse,
+  PaginatedResponse, PossibleDuplicate
+} from '@/types';
 
 export interface GetClientsParams {
   page?: number;
@@ -44,5 +50,10 @@ export const clientService = {
   activateClient: async (id: string): Promise<Client> => {
     const response = await apiClient.patch<Client>(`/clients/${id}/activate`);
     return response.data;
+  },
+
+  checkDuplicates: async (payload: ClientDuplicateCheckPayload): Promise<DuplicateCheckResponse<PossibleDuplicate>> => {
+  const response = await apiClient.post<DuplicateCheckResponse<PossibleDuplicate>>('/clients/check-duplicates', payload);
+  return response.data;
   },
 };
