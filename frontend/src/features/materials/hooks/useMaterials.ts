@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { materialService } from '../services/materialService';
 import { materialKeys } from '../utils/materialKeys';
-import type { GetMaterialsParams, MaterialCreatePayload, MaterialUpdatePayload } from '@/types';
+import type { GetMaterialsParams, MaterialCreatePayload, MaterialUpdatePayload, MaterialDuplicateCheckPayload } from '@/types';
 
 // Hook para listagem de materiais
 export function useMaterials(params: GetMaterialsParams) {
@@ -90,3 +90,20 @@ export function useActivateMaterial() {
     },
   });
 }
+
+
+
+// Hook para consultar possíveis materiais duplicados.
+export function useCheckMaterialDuplicates() {
+  return useMutation({
+    mutationFn: (payload: MaterialDuplicateCheckPayload) =>
+      materialService.checkDuplicates(payload),
+
+    onError: () => {
+      toast.error(
+        'Não foi possível verificar possíveis materiais duplicados.',
+      );
+    },
+  });
+}
+
