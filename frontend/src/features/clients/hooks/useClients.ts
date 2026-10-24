@@ -1,7 +1,7 @@
 // frontend/src/features/clients/hooks/useClients.ts
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ClientCreatePayload, ClientUpdatePayload } from '@/types';
+import type {ClientCreatePayload, ClientDuplicateCheckPayload, ClientUpdatePayload} from '@/types';
 import { clientService } from '../services/clientService';
 import type { GetClientsParams } from '../services/clientService';
 import { toast } from "sonner";
@@ -99,6 +99,19 @@ export function useActivateClient() {
     },
     onError: () => {
       toast.error('Erro ao reativar o cliente.');
+    },
+  });
+}
+
+// Hook para consultar possíveis clientes duplicados
+export function useCheckClientDuplicates() {
+  return useMutation({
+    mutationFn: (payload: ClientDuplicateCheckPayload) =>
+      clientService.checkDuplicates(payload),
+    onError: () => {
+      toast.error(
+        'Não foi possível verificar possíveis clientes duplicados.',
+      );
     },
   });
 }
