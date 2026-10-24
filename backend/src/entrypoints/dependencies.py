@@ -18,6 +18,7 @@ from src.domain.use_cases.client.find_possible_duplicates import FindPossibleDup
 from src.domain.use_cases.material.activate_material import ActivateMaterialUseCase
 from src.domain.use_cases.material.create_material import CreateMaterialUseCase
 from src.domain.use_cases.material.delete_material import DeleteMaterialUseCase
+from src.domain.use_cases.material.find_possible_material_duplicates import FindPossibleMaterialDuplicatesUseCase
 from src.domain.use_cases.material.list_materials import ListMaterialsUseCase
 from src.domain.use_cases.material.update_material import UpdateMaterialUseCase
 from src.domain.use_cases.rental.cancel_rental import CancelRentalUseCase
@@ -56,6 +57,9 @@ def get_delete_material_use_case(material_repo: MaterialRepositoryPort = Depends
 
 def get_activate_material_use_case(material_repo: MaterialRepositoryPort = Depends(get_material_repository)) -> ActivateMaterialUseCase:
     return ActivateMaterialUseCase(material_repo=material_repo)
+
+def get_find_possible_material_duplicates_use_case(material_repo: MaterialRepositoryPort = Depends(get_material_repository)) -> FindPossibleMaterialDuplicatesUseCase:
+    return FindPossibleMaterialDuplicatesUseCase(material_repo=material_repo)
 
 
 # -----------------
