@@ -13,7 +13,7 @@ import type { Client } from '@/types';
 const clientSchema = z.object({
   name: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
   phone: z.string().optional(),
-  address: z.string().optional(),E
+  address: z.string().optional(),
 });
 
 type ClientFormData = z.infer<typeof clientSchema>;
