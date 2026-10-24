@@ -102,6 +102,24 @@ class MaterialResponseSchema(BaseModel):
     is_active: bool
     created_at: datetime
 
+class MaterialDuplicateCheckSchema(BaseModel):
+    name: str = Field(
+        min_length=3,
+        max_length=100,
+        description="Nome do material para verificar possíveis duplicidades",
+    )
+
+
+class PossibleMaterialDuplicateResponseSchema(BaseModel):
+    id: UUID
+    name: str
+    similarity: float
+
+
+class MaterialDuplicateCheckResponseSchema(BaseModel):
+    has_duplicates: bool
+    matches: List[PossibleMaterialDuplicateResponseSchema]
+
 
 # --- RENTAL SCHEMAS ---
 class RentalCreateSchema(BaseModel):
