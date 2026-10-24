@@ -28,7 +28,7 @@ export interface Client {
 
 export interface ClientCreatePayload {
   name: string;
-  phone: string;
+  phone?: string;
   address?: string;
 }
 
