@@ -1,9 +1,9 @@
 # backend/src/entrypoints/schemas/schemas.py
-
+import uuid
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional, Generic, TypeVar, List
-import uuid
+from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.domain.entities.rental import PaymentStatus, RentalStatus
@@ -35,7 +35,7 @@ class PaginatedResponse(BaseModel, Generic[T]):
 class ClientResponseSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: uuid.UUID
+    id: UUID
     name: str
     phone: Optional[str] = Field(None, min_length=8, max_length=20)
     address: Optional[str]
@@ -61,6 +61,22 @@ class ClientUpdateSchema(BaseModel):
         if isinstance(value, str) and not value.strip():
             return None
         return value
+
+
+class ClientDuplicateCheckSchema(BaseModel):
+    name: str = Field(min_length=3, description="Nome completo para verificar")
+
+
+class PossibleDuplicateResponseSchema(BaseModel):
+    id: UUID
+    name: str
+    phone: Optional[str] = None
+    similarity: float
+
+
+class ClientDuplicateCheckResponseSchema(BaseModel):
+    has_duplicates: bool
+    matches: list[PossibleDuplicateResponseSchema]
 
 
 # --- MATERIAL SCHEMAS ---
