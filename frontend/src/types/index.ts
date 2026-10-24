@@ -36,6 +36,24 @@ export interface ClientUpdatePayload extends Partial<ClientCreatePayload> {
   is_active?: boolean;
 }
 
+
+export interface PossibleDuplicate {
+  id: string;
+  name: string;
+  phone?: string | null;
+  similarity: number;
+}
+
+export interface DuplicateCheckResponse<T> {
+  has_duplicates: boolean;
+  matches: T[];
+}
+
+export interface ClientDuplicateCheckPayload {
+  name: string;
+}
+
+
 // ==========================================
 // MÓDULO DE MATERIAIS (material_context)
 // ==========================================
