@@ -10,7 +10,7 @@ interface DiscountAuditSectionProps {
 
 export function DiscountAuditSection({ rentals }: DiscountAuditSectionProps) {
   // Buscamos os materiais para comparar as diárias dos contratos com as diárias base da tabela
-  const { data: materialsData } = useMaterials({ is_active: true, limit: 200 });
+  const { data: materialsData } = useMaterials({ is_active: true, limit: 200000 });
   const materials = Array.isArray(materialsData) ? materialsData : materialsData?.items || [];
 
   // Mapeamento dos preços base por ID de material
