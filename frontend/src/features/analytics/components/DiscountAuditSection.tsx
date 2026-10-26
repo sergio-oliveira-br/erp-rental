@@ -32,8 +32,9 @@ export function DiscountAuditSection({ rentals }: DiscountAuditSectionProps) {
 
       if (baseRate && appliedRate < baseRate) {
         const totalDays = rental.total_days || 1;
+        const quantity = rental.quantity
         const discountPerDay = baseRate - appliedRate;
-        const contractTotalDiscount = discountPerDay * totalDays;
+        const contractTotalDiscount = discountPerDay * totalDays * quantity;
 
         discountedContractsCount += 1;
         totalDiscountValue += contractTotalDiscount;
