@@ -29,8 +29,16 @@ export function WelcomePage({ onSelectTab }: WelcomePageProps) {
   // ).length;
 
   const totalMonthlyRevenue = rentals
-    .filter((rental: Rental) => rental.payment_status === PaymentStatus.PAID)
-    .reduce((acc: number, rental: Rental) => acc + Number(rental.total_value || 0), 0);
+  .filter(
+    (rental: Rental) =>
+      rental.payment_status === PaymentStatus.PAID &&
+      rental.rental_status !== RentalStatus.CANCELLED
+  )
+  .reduce(
+    (acc: number, rental: Rental) =>
+      acc + Number(rental.total_value || 0),
+    0
+  );
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-8">
