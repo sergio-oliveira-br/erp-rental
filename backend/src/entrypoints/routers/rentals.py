@@ -146,6 +146,7 @@ def update_rental(
             delivery_address=payload.delivery_address,
             notes=payload.notes,
             end_date=payload.end_date,
+            quantity=payload.quantity,
         )
     except (EntityNotFoundException, DomainException) as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
