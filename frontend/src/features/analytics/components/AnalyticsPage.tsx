@@ -11,7 +11,7 @@ import { DiscountAuditSection } from './DiscountAuditSection';
 export function AnalyticsPage() {
   const [timeFilter, setTimeFilter] = useState<'current_month' | 'last_3_months' | 'year_2026' | 'all'>('current_month');
 
-  const { data: rentalsData } = useRentals({ page: 1, limit: 100000 });
+  const { data: rentalsData } = useRentals({ page: 1, limit: 10000 });
   const rawRentals = Array.isArray(rentalsData) ? rentalsData : (rentalsData as any)?.items || [];
 
 
