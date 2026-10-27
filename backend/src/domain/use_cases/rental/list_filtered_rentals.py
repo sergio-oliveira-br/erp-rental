@@ -1,9 +1,10 @@
-# backend/src/domain/use_cases/rental/list_filtered_rentals.py
 
 from datetime import date
 from typing import Dict, Any, Optional
 import uuid
+
 from src.domain.ports.rental_repository import RentalRepositoryPort
+
 
 class ListFilteredRentalsUseCase:
     def __init__(self, rental_repo: RentalRepositoryPort):
@@ -19,34 +20,38 @@ class ListFilteredRentalsUseCase:
         payment_status: Optional[str] = None,
         start_date_from: Optional[date] = None,
         start_date_to: Optional[date] = None,
+        end_date_from: Optional[date] = None,
+        end_date_to: Optional[date] = None,
+        order_by_end_date: bool = False,
     ) -> Dict[str, Any]:
 
         page = max(1, page)
-        limit = max(1, min(limit, 100000))
+        limit = max(1, min(limit, 100))
+
+        filters = {
+            "owner_id": owner_id,
+            "search": search,
+            "status": status,
+            "payment_status": payment_status,
+            "start_date_from": start_date_from,
+            "start_date_to": start_date_to,
+            "end_date_from": end_date_from,
+            "end_date_to": end_date_to,
+        }
 
         items = self.rental_repo.get_filtered_rentals(
-            owner_id=owner_id,
+            **filters,
             page=page,
             limit=limit,
-            search=search,
-            status=status,
-            payment_status=payment_status,
-            start_date_from=start_date_from,
-            start_date_to=start_date_to,
+            order_by_end_date=order_by_end_date,
         )
 
-        total = self.rental_repo.count_filtered_rentals(
-            owner_id=owner_id,
-            search=search,
-            status=status,
-            payment_status=payment_status,
-            start_date_from=start_date_from,
-            start_date_to=start_date_to,
-        )
+        total = self.rental_repo.count_filtered_rentals(**filters)
 
         return {
             "items": items,
             "total": total,
             "page": page,
-            "limit": limit
+            "limit": limit,
+            "pages": (total + limit - 1) // limit,
         }
