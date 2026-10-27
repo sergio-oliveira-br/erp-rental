@@ -179,6 +179,11 @@ class RentalUpdateSchema(BaseModel):
     delivery_address: Optional[str] = None
     notes: Optional[str] = None
     end_date: Optional[date] = None
+    quantity: Optional[int] = Field(
+        default=None,
+        ge=1,
+        description="Nova quantidade de unidades alugadas",
+        examples=[20])
 
 class RentalAuditLogResponse(BaseModel):
     id: uuid.UUID
