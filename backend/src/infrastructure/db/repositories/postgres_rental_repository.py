@@ -62,13 +62,21 @@ class PostgresRentalRepository(RentalRepositoryPort):
         entity.material_name = material_name
         return entity
 
-    def _apply_rental_filters(self, statement: Any, search: Optional[str] = None,
-                              status: Optional[str] = None, payment_status: Optional[str] = None,
-                              start_date_from: Optional[date] = None, start_date_to: Optional[date] = None,) -> Any:
+    def _apply_rental_filters(
+            self,
+            statement: Any,
+            search: Optional[str] = None,
+            status: Optional[str] = None,
+            payment_status: Optional[str] = None,
+            start_date_from: Optional[date] = None,
+            start_date_to: Optional[date] = None,
+            end_date_from: Optional[date] = None,
+            end_date_to: Optional[date] = None,
+    ) -> Any:
         if search:
             search_term = f"%{search}%"
             statement = statement.where(
-                sa.or_(ClientTable.name.ilike(search_term), MaterialTable.name.ilike(search_term)))
+                sa.or_(ClientTable.name.ilike(search_term),MaterialTable.name.ilike(search_term)))
 
         if status:
             statement = statement.where(RentalTable.status == status)
@@ -81,6 +89,12 @@ class PostgresRentalRepository(RentalRepositoryPort):
 
         if start_date_to:
             statement = statement.where(RentalTable.start_date <= start_date_to)
+
+        if end_date_from:
+            statement = statement.where(RentalTable.end_date >= end_date_from)
+
+        if end_date_to:
+            statement = statement.where(RentalTable.end_date <= end_date_to)
 
         return statement
 
@@ -113,21 +127,43 @@ class PostgresRentalRepository(RentalRepositoryPort):
         results = self.session.exec(statement).all()
         return [self._map_rental_row(row) for row in results]
 
-    def get_filtered_rentals(self, owner_id: uuid.UUID, page: int = 1, limit: int = 10, search: Optional[str] = None,
-                             status: Optional[str] = None, payment_status: Optional[str] = None,
-                             start_date_from: Optional[date] = None, start_date_to: Optional[date] = None,) -> List[Rental]:
+    def get_filtered_rentals(self,
+                             owner_id: uuid.UUID, page: int = 1,
+                             limit: int = 10, search: Optional[str] = None,
+                             status: Optional[str] = None,
+                             payment_status: Optional[str] = None,
+                             start_date_from: Optional[date] = None,
+                             start_date_to: Optional[date] = None,
+                             end_date_from: Optional[date] = None,
+                             end_date_to: Optional[date] = None,
+                             order_by_end_date: bool = False) -> List[Rental]:
 
         statement = (select(RentalTable, ClientTable.name, MaterialTable.name)
                      .join(ClientTable, RentalTable.client_id == ClientTable.id)
                      .join(MaterialTable, RentalTable.material_id == MaterialTable.id)
                      .where(RentalTable.owner_id == owner_id))  # <-- Isolamento estrito por tenant
 
-        statement = self._apply_rental_filters(statement, search, status, payment_status, start_date_from, start_date_to)
-
-        statement = statement.order_by(
-            RentalTable.start_date.desc(),
-            RentalTable.id.desc(),
+        statement = self._apply_rental_filters(
+            statement,
+            search=search,
+            status=status,
+            payment_status=payment_status,
+            start_date_from=start_date_from,
+            start_date_to=start_date_to,
+            end_date_from=end_date_from,
+            end_date_to=end_date_to,
         )
+
+        if order_by_end_date:
+            statement = statement.order_by(
+                RentalTable.end_date.asc(),
+                RentalTable.id.asc(),
+            )
+        else:
+            statement = statement.order_by(
+                RentalTable.start_date.desc(),
+                RentalTable.id.desc(),
+            )
 
         offset = (page - 1) * limit
         statement = statement.offset(offset).limit(limit)
@@ -193,6 +229,8 @@ class PostgresRentalRepository(RentalRepositoryPort):
             payment_status: Optional[str] = None,
             start_date_from: Optional[date] = None,
             start_date_to: Optional[date] = None,
+            end_date_from: Optional[date] = None,
+            end_date_to: Optional[date] = None,
     ) -> int:
         statement = (
             select(sa.func.count(RentalTable.id))
@@ -203,7 +241,7 @@ class PostgresRentalRepository(RentalRepositoryPort):
         )
 
         statement = self._apply_rental_filters(
-            statement, search, status, payment_status, start_date_from, start_date_to
+            statement, search, status, payment_status, start_date_from, start_date_to, end_date_from, end_date_to
         )
 
         return self.session.exec(statement).one()
