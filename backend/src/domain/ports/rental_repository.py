@@ -49,8 +49,11 @@ class RentalRepositoryPort(ABC):
         payment_status: Optional[str] = None,
         start_date_from: Optional[date] = None,
         start_date_to: Optional[date] = None,
+        end_date_from: Optional[date] = None,
+        end_date_to: Optional[date] = None,
+        order_by_end_date: bool = False,
     ) -> List[Rental]:
-        """Lista locações com suporte a filtros dinâmicos e paginação para alta volumetria, isoladas por owner_id."""
+        """Lista locações filtradas e paginadas, isoladas por owner_id."""
         pass
 
     @abstractmethod
@@ -72,5 +75,8 @@ class RentalRepositoryPort(ABC):
             payment_status: Optional[str] = None,
             start_date_from: Optional[date] = None,
             start_date_to: Optional[date] = None,
+            end_date_from: Optional[date] = None,
+            end_date_to: Optional[date] = None,
     ) -> int:
+        """Conta locações correspondentes aos filtros, isoladas por owner_id."""
         pass
