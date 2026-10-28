@@ -10,7 +10,7 @@ from src.infrastructure.db.session import get_session
 from src.infrastructure.db.models import UserTable
 from src.core.security import verify_password, get_password_hash, create_access_token
 from src.entrypoints.schemas import LoginRequest, Verify2FARequest, CreateUserRequest
-from src.entrypoints.dependencies import get_current_admin_user
+from src.entrypoints.dependencies import get_current_admin_user, get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -68,6 +68,17 @@ def verify_2fa(payload: Verify2FARequest, session: Session = Depends(get_session
         "token_type": "bearer",
         "is_admin": user.is_admin,
         "username": user.username
+    }
+
+
+@router.get("/me")
+def get_me(current_user: UserTable = Depends(get_current_user)):
+    """Retorna os dados do usuário autenticado."""
+    return {
+        "id": str(current_user.id),
+        "username": current_user.username,
+        "is_admin": current_user.is_admin,
+        "is_active": current_user.is_active,
     }
 
 
