@@ -32,3 +32,4 @@ dummy.zip
 # Ficheiros criados pelo macOS
 .DS_Store
 **/.DS_Store
+terraform/environments/production/otel.tfplan
