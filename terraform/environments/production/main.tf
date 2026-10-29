@@ -52,6 +52,9 @@ module "lambda" {
   lambda_role_arn       = module.iam.lambda_role_arn
   filename              = data.archive_file.dummy.output_path
   environment_variables = var.environment_variables
+
+  otel_enabled      = true
+  otel_service_name = var.project_name
 }
 
 # API Gateway
