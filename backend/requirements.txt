@@ -1,7 +1,7 @@
 # backend/requirements.txt
 
 # Web Framework & AWS Lambda Adapter
-fastapi>=0.110.0
+fastapi==0.115.14
 mangum>=0.17.0
 aws-lambda-powertools[all]>=2.34.0
 uvicorn[standard]>=0.28.0
