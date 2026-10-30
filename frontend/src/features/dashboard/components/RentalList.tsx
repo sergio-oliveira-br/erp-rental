@@ -1,8 +1,7 @@
-// frontend/src/features/dashboard/components/RentalList.tsx
 
-
-import {Pagination} from '@/components/ui/Pagination';
-import type {Rental} from '@/types';
+import { Button } from '@/components/ui/Button';
+import { Pagination } from '@/components/ui/Pagination';
+import type { Rental } from '@/types';
 
 interface RentalListProps {
     items: Rental[];
@@ -11,6 +10,11 @@ interface RentalListProps {
     pageSize?: number;
     onPageChange: (page: number) => void;
     onSelectRental?: (rental: Rental) => void;
+
+    actionLabel?: string;
+    actionVariant?: 'danger' | 'success';
+    onAction?: (rental: Rental) => void;
+    actionDisabled?: boolean;
 }
 
 function parseDate(date: string): Date {
@@ -36,9 +40,16 @@ export function RentalList({
     pageSize = 5,
     onPageChange,
     onSelectRental,
+    actionLabel,
+    actionVariant = 'success',
+    onAction,
+    actionDisabled = false,
 }: RentalListProps) {
     const totalPages = Math.ceil(items.length / pageSize);
-    const startIndex = (page - 1) * pageSize;
+
+    const currentPage = Math.min(page, Math.max(totalPages, 1));
+
+    const startIndex = (currentPage - 1) * pageSize;
 
     const paginatedItems = items.slice(
         startIndex,
@@ -57,13 +68,16 @@ export function RentalList({
         <div>
             <div className="divide-y divide-gray-100">
                 {paginatedItems.map((rental) => (
-                    <button
+                    <div
                         key={rental.id}
-                        type="button"
-                        onClick={() => onSelectRental?.(rental)}
-                        className="flex w-full items-center gap-3 py-3 text-left hover:bg-gray-50"
+                        className="flex items-center gap-3 py-3"
                     >
-                        <div className="min-w-0 flex-1">
+                        {/* Informações do contrato */}
+                        <button
+                            type="button"
+                            onClick={() => onSelectRental?.(rental)}
+                            className="min-w-0 flex-1 text-left hover:bg-gray-50"
+                        >
                             <p className="truncate text-sm font-medium text-gray-900">
                                 {rental.client_name || 'Cliente não identificado'}
                             </p>
@@ -73,8 +87,9 @@ export function RentalList({
                                 {' · '}
                                 Contrato #{rental.id.slice(0, 8)}
                             </p>
-                        </div>
+                        </button>
 
+                        {/* Data e valor */}
                         <div className="shrink-0 text-right">
                             <p className="text-sm font-medium text-gray-800">
                                 {formatDate(rental.end_date)}
@@ -84,13 +99,32 @@ export function RentalList({
                                 {formatCurrency(Number(rental.total_value || 0))}
                             </p>
                         </div>
-                    </button>
+
+                        {/* Único botão de ação */}
+                        {actionLabel && onAction && (
+                            <div className="shrink-0">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={actionDisabled}
+                                    onClick={() => onAction(rental)}
+                                    className={`whitespace-nowrap transition-colors ${
+                                        actionVariant === 'danger'
+                                            ? 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:border-red-300'
+                                            : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300'
+                                    }`}
+                                >
+                                    {actionLabel}
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 ))}
             </div>
 
             <div className="mt-3">
                 <Pagination
-                    page={page}
+                    page={currentPage}
                     totalPages={totalPages}
                     onPageChange={onPageChange}
                 />
