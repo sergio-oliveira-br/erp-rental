@@ -1,6 +1,5 @@
 // frontend/src/features/dashboard/components/RentalAlertCard.tsx
 
-
 import {useState, type ReactNode} from 'react';
 import {ChevronDown, ChevronUp} from 'lucide-react';
 
@@ -10,6 +9,7 @@ interface RentalAlertCardProps {
     description: string;
     count: number;
     color: 'amber' | 'red';
+    defaultOpen?: boolean;
     children: ReactNode;
 }
 
@@ -36,9 +36,10 @@ export function RentalAlertCard({
     description,
     count,
     color,
+    defaultOpen = false,
     children,
 }: RentalAlertCardProps) {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(defaultOpen);
 
     const colors = colorVariants[color];
 
