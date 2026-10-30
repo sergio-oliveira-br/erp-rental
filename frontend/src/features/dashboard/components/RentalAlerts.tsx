@@ -179,12 +179,6 @@ export function RentalAlerts({
                 <h2 className="text-lg font-semibold text-gray-900">
                     Atenção necessária
                 </h2>
-
-                {overdue.length > 0 && (
-                    <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
-                        {overdue.length} contrato(s) em atraso
-                    </span>
-                )}
             </div>
 
             {/* Cartões de alertas */}
