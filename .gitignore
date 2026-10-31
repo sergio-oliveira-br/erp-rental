@@ -33,3 +33,4 @@ dummy.zip
 .DS_Store
 **/.DS_Store
 terraform/environments/production/otel.tfplan
+backend/.DS_Store
