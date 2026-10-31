@@ -28,7 +28,9 @@ export function FinancialOverviewSection({ rentals }: FinancialOverviewSectionPr
 
   // Ticket Médio
   const activeRentalsCount = rentals.filter(r => r.rental_status !== 'CANCELLED').length;
-  const averageTicket = activeRentalsCount > 0 ? totalProjected / activeRentalsCount : 0;
+const averageTicket = activeRentalsCount > 0
+  ? Number((totalProjected / activeRentalsCount).toFixed(2))
+  : 0;
 
   return (
     <div className="space-y-4">
