@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     # Será utilizado para consultar a identidade do usuário.
     ERP_API_BASE_URL: str
 
+    # Exibe os comandos SQL no terminal quando habilitado.
+    DB_ECHO: bool = False
+
     model_config = SettingsConfigDict(
         env_file=ENV_PATH,
         env_file_encoding="utf-8",
