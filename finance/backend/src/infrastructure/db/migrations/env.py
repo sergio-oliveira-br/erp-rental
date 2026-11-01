@@ -8,6 +8,9 @@ from sqlmodel import SQLModel
 
 from src.infrastructure.config.settings import settings
 
+# Importa os modelos para registrá-los nos metadados do SQLModel.
+from src.infrastructure.db import models
+
 
 # Objeto de configuração disponibilizado pelo Alembic.
 config = context.config
