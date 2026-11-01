@@ -109,8 +109,10 @@ export function AnalyticsPage() {
                 <ClientPerformanceSection rentals={filteredRentals}/>
 
                 {/* BLOCO 4: Impacto Financeiro de Descontos */}
-                <DiscountAuditSection rentals={filteredRentals}/>
-
+                <DiscountAuditSection
+                    rentals={filteredRentals}
+                    allRentals={rawRentals}
+                />
             </div>
         </div>
     );
