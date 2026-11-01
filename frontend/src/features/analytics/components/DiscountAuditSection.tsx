@@ -7,9 +7,10 @@ import {MonthlyRevenueSection} from './MonthlyRevenueSection';
 
 interface DiscountAuditSectionProps {
     rentals: Rental[];
+    allRentals: Rental[];
 }
 
-export function DiscountAuditSection({rentals}: DiscountAuditSectionProps) {
+export function DiscountAuditSection({rentals, allRentals}: DiscountAuditSectionProps) {
     // Buscamos os materiais para comparar as diárias dos contratos com as diárias base da tabela
     const {data: materialsData} = useMaterials({is_active: true, limit: 200000});
     const materials = Array.isArray(materialsData) ? materialsData : materialsData?.items || [];
@@ -102,7 +103,7 @@ export function DiscountAuditSection({rentals}: DiscountAuditSectionProps) {
                 {/* 2/3 - Faturamento Mensal */}
                 <div className="lg:col-span-2 min-w-0">
                     <MonthlyRevenueSection
-                        rentals={rentals}
+                        rentals={allRentals}
                         year={2026}
                         compact
                     />
