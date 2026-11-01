@@ -6,7 +6,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from src.infrastructure.config.settings import settings
 from src.infrastructure.db import models
 
-engine = create_engine(settings.database_url, echo=True, pool_pre_ping=True)
+engine = create_engine(settings.database_url, echo=False, pool_pre_ping=True)
 
 
 def init_db() -> None:
