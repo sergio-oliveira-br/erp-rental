@@ -101,3 +101,23 @@ class Category:
 
         self.is_active = True
         self.updated_at = datetime.now(timezone.utc)
+
+
+    def update_description(self, new_description: Optional[str]) -> None:
+        """
+        Atualiza a descrição da categoria.
+
+        Permite remover a descrição enviando None ou texto vazio.
+        """
+
+        if new_description is not None:
+            new_description = new_description.strip() or None
+
+            if new_description and len(new_description) > 500:
+                raise BusinessRuleException(
+                    "A descrição não pode ultrapassar 500 caracteres."
+                )
+
+        self.description = new_description
+        self.updated_at = datetime.now(timezone.utc)
+
