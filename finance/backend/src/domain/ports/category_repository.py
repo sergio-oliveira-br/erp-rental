@@ -40,12 +40,12 @@ class CategoryRepository(ABC):
     @abstractmethod
     def get_by_name(
         self,
-        name: str,
+        comparison_name: str,
         owner_id: uuid.UUID,
     ) -> Optional[Category]:
         """
-        Procura uma categoria pelo nome dentro
-        do contexto de um proprietário.
+        Procura uma categoria pela chave normalizada de comparação,
+        dentro do proprietário indicado.
         """
         pass
 
