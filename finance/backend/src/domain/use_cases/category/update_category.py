@@ -43,4 +43,4 @@ class UpdateCategoryUseCase:
         if description is not None:
             category.update_description(description)
 
-        return self.category_repository.save(category)
+        return self.category_repository.update(category)
