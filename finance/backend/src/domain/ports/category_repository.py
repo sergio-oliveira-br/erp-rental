@@ -61,3 +61,12 @@ class CategoryRepository(ABC):
         Por defeito, apresenta apenas categorias ativas.
         """
         pass
+
+    @abstractmethod
+    def update(
+        self,
+        category:
+        Category
+    ) -> Category:
+        """Atualiza uma categoria existente."""
+        pass
