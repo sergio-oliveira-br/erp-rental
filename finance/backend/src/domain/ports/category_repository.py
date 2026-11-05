@@ -40,7 +40,7 @@ class CategoryRepository(ABC):
     @abstractmethod
     def get_by_name(
         self,
-        comparison_name: str,
+        name: str,
         owner_id: uuid.UUID,
     ) -> Optional[Category]:
         """
