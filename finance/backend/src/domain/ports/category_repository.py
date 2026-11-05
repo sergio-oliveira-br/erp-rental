@@ -54,6 +54,7 @@ class CategoryRepository(ABC):
         self,
         owner_id: uuid.UUID,
         active_only: bool = True,
+        search_term: Optional[str] = None,
     ) -> list[Category]:
         """
         Lista as categorias de um proprietário.
